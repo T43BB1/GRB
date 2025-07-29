@@ -1,0 +1,79 @@
+- name: checklist 7
+  hosts: intranetweb
+  
+  tasks:
+  # header
+  - set_fact:
+      diag: 최신 보안 패치 적용
+      num: 7
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  # body
+  - name: Get Nginx version
+    shell: docker exec -i nginxgrb bash -c "nginx -v 2>&1 | grep -o '[0-9.]*'"
+    register: nginx_version
+    ignore_errors: yes
+
+  - debug:
+      msg: "nginx_current_version: {{nginx_version.stdout_lines}}"
+  - name: Get latest Nginx version
+    shell: docker exec -i nginxgrb bash -c "curl -s https://nginx.org/en/download.html | grep -oP 'nginx-\K[0-9.]+(?=</a>)' | sort -V | tail -1"
+    register: latest_version
+    ignore_errors: yes
+
+  - debug:
+      msg: "latest version : {{latest_version.stdout_lines}}" 
+
+  - name: Compare versions
+    set_fact:
+      report: "{{ 'weak' if (nginx_version.stdout | trim) != (latest_version.stdout | trim) else 'strong' }}"
+    ignore_errors: yes
+
+  # weak?
+  - set_fact:
+      weak: "{{ (nginx_version.stdout | trim) != (latest_version.stdout | trim) }}"
+  - debug:
+      var: weak
+
+  # result
+  - block:
+      - debug:
+          msg: 해당없음
+      - set_fact:
+          result: "{{{'num': num, 'diag': diag, 'weak': none, 'reason': ['N/A']} }}"
+      - copy:
+          content: "{{ result }}"
+          dest: /home/ubuntu/grbprj/log/nginx/diag/7.json
+        delegate_to: localhost
+    when: weak is none
+
+  - block:
+      - debug:
+          msg: 취약
+      - set_fact:
+          result: "{{{'num': num, 'diag': diag, 'weak': True, 'reason': ['Nginx version is outdated'], 'bypass': [{'latest_version': latest_version.stdout }], 'how_action': ['Action will update Nginx to the latest version. Do you want to proceed?']} }}"
+      - copy:
+          content: "{{ result }}"
+          dest: /home/ubuntu/grbprj/log/nginx/diag/7.json
+        delegate_to: localhost
+    when: weak is not none and weak
+
+  - block:
+      - debug:
+          msg: 양호
+      - set_fact:
+          result: "{{{'num': num, 'diag': diag, 'weak': False, 'reason': ['Nginx version is up-to-date | current version : {{nginx_version.stdout}}, latest_version : {{latest_version.stdout}}']} }}"
+      - copy:
+          content: "{{ result }}"
+          dest: /home/ubuntu/grbprj/log/nginx/diag/7.json
+        delegate_to: localhost
+    when: weak is not none and not weak
+  
+  - name: Sorting result
+    set_fact:
+      result: "{{ result | sort(attribute='num') }}"
+  - debug:
+      var: result

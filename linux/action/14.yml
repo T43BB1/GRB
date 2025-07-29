@@ -1,0 +1,79 @@
+# DNS 보안 버전 패치_setup
+---
+- name: actionlist 14
+  hosts: intranetweb
+  vars:
+    latest_version: "9.16.23"  # 최신 버전 명시, 필요시 최신 버전을 변경
+  tasks:
+
+  - set_fact:
+      diag: Install security patches and Stop of DNS service
+      num: 14
+
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  # DNS(BIND) 서비스 프로세스 확인
+  - name: Check if DNS service (BIND) is running
+    shell: ps -ef | grep -v grep | grep named
+    register: dns_process
+    ignore_errors: yes
+
+  # BIND 버전 확인
+  - name: Check BIND version if running
+    shell: named -v
+    when: dns_process.stdout != ""
+    register: bind_version
+    ignore_errors: yes
+
+  # BIND 최신 버전 패치 설치
+  - name: Install BIND security patches
+    yum:
+      name: bind
+      state: latest
+    when: dns_process.stdout != "" and bind_version.stdout != "BIND {{ latest_version }}"
+    ignore_errors: yes
+
+  # DNS 서비스를 사용하지 않는 경우 서비스 중지
+  - name: Stop DNS service if not in use
+    service:
+      name: named
+      state: stopped
+    when: dns_process.stdout == ""
+    ignore_errors: yes
+
+  # BIND 보안 패치 설치 후 메시지 출력
+  - name: Notify about BIND patch update
+    debug:
+      msg: >
+        {% if dns_process.stdout != "" and bind_version.stdout != "BIND {{ latest_version }}" %}
+          BIND security patch has been installed to version {{ latest_version }}.
+        {% elif dns_process.stdout != "" %}
+          BIND is already up to date with version {{ latest_version }}.
+        {% else %}
+          DNS service (BIND) is not running.
+        {% endif %}
+
+  # DNS 서비스를 사용하지 않는 경우 메시지 출력
+  - name: Notify if DNS service is not in use
+    debug:
+      msg: >
+        {% if dns_process.stdout == "" %}
+          N/A: DNS service (BIND) is not running, service stopped.
+        {% endif %}
+
+  # action result
+
+  - debug:
+      msg: 조치완료
+  # 조치 결과 디테일 / status는 점검 완료
+  - set_fact:
+      result: "{{ {'num': num, 'diag': diag, 'details': ['hihi check~ Installing the latest version of the security patch and stopping the DNS daemon is completed'], 'status': 'Action Completed'} }}"
+  - copy:
+      content: "{{ result }}"
+      dest: /home/ubuntu/grbprj/log/linux/action/14.json
+    delegate_to: localhost
+  - debug:
+      var: result

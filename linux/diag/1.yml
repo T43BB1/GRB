@@ -1,0 +1,117 @@
+# root 계정 원격 접속 제한_check
+---
+- name: checklist 1
+  hosts: intranetweb
+  tasks:  
+# header
+      
+  - set_fact:
+      diag: Check root remote access restriction
+      num: 1
+    
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+# body
+  - name: Check if telnet is installed
+    command: which telnet
+    register: telnet_installed
+    ignore_errors: yes
+
+  - name: Check pts configuration in /etc/securetty for telnet
+    when: telnet_installed.rc == 0
+    command: cat /etc/securetty
+    register: securetty_content
+    ignore_errors: yes
+
+# checking weak(Telnet)
+  - set_fact:
+      weak: "{{ telnet_installed.rc == 0 and securetty_content.stdout is search('pts/[0-9]') }}"
+  - debug:
+      var: weak
+
+# body
+  - name: Check if ssh is installed
+    command: which sshd
+    register: ssh_installed
+    ignore_errors: yes
+
+  - name: Check PermitRootLogin in /etc/ssh/sshd_config (SSH check)
+    when: ssh_installed.rc == 0
+    shell: cat /etc/ssh/sshd_config | grep PermitRootLogin
+    register: ssh_config
+    ignore_errors: yes
+
+# checking weak(SSH)
+  - set_fact:
+      weak: "{{ weak or (ssh_installed.rc == 0 and ssh_config.stdout is not search('PermitRootLogin no')) }}"
+    
+  - debug:
+      var: weak
+
+  - block:
+      - debug:
+          msg: 해당없음
+      - set_fact:
+          result: "{{ {'num': num, 'diag': diag, 'weak': none, 'reason': ['N/A']} }}"
+      - copy:
+          content: "{{ result | to_nice_json }}"
+          dest: /home/ubuntu/grbprj/log/linux/diag/1.json
+        delegate_to: localhost
+    when: weak is none
+
+# Telnet 및 SSH 취약점 통합 판정
+  - block:
+      - debug:
+          msg: 취약
+
+      - set_fact:
+          result: >-
+            {{
+              {
+                'num': num,
+                'diag': diag,
+                'weak': True,
+                'reason': (
+                  (['Telnet pts configuration is found'] 
+                   if (telnet_installed.rc == 0 and securetty_content.stdout is search('pts/[0-9]')) 
+                   else ['Telnet pts configuration is not found']
+                  ) + 
+                  (['Not set to PermitRootLogin no'] 
+                   if (ssh_installed.rc == 0 and ssh_config.stdout is not search('PermitRootLogin no')) 
+                   else ['Already set to PermitRootLogin no']
+                  )
+                ),
+                'bypass': (
+                  ([{'weak_ids': telnet_installed.rc}] 
+                   if (telnet_installed.rc == 0 and securetty_content.stdout is search('pts/[0-9]'))  
+                   else []) + 
+                  ([{'weak_ids': ssh_installed.rc}] 
+                   if (ssh_installed.rc == 0 and ssh_config.stdout is not search('PermitRootLogin no')) 
+                   else [])
+                ),
+                'how_action': ['Action will set restriction of telnet/ssh access of root. Do you want to proceed?']
+              }
+            }}
+
+      - copy:
+          content: "{{ result | to_nice_json }}"
+          dest: /home/ubuntu/grbprj/log/linux/diag/1.json
+        delegate_to: localhost
+
+    when: (telnet_installed.rc == 0 and securetty_content.stdout is search('pts/[0-9]')) or (ssh_installed.rc == 0 and ssh_config.stdout is not search('PermitRootLogin no'))
+
+
+  - block:
+      - debug:
+          msg: 양호
+      - set_fact:
+          result: "{{ {'num': num, 'diag': diag, 'weak': False, 'reason': ['Telnet pts is not found and PermitRootLogin is already set to no']} }}"
+      - copy:
+          content: "{{ result | to_nice_json }}"
+          dest: /home/ubuntu/grbprj/log/linux/diag/1.json
+        delegate_to: localhost
+    when: weak is not none and not weak
+

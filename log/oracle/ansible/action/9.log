@@ -1,0 +1,62 @@
+
+PLAY [checklist 9] *************************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "diag": "Configure DBA account roles"
+}
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "num": 9
+}
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": [
+        "DBMS_LOB",
+        "UTL_TCP",
+        "UTL_HTTP",
+        "UTL_FILE",
+        "UTL_INADDR",
+        "UTL_SMTP",
+        "DBMS_JOB",
+        "DBMS_RANDOM"
+    ]
+}
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": "조치완료"
+}
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [copy] ********************************************************************
+ok: [10.0.2.11 -> localhost]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "result": {
+        "details": [
+            "Restriction of The Role for DBA account named DBMS_LOB, UTL_TCP, UTL_HTTP, UTL_FILE, UTL_INADDR, UTL_SMTP, DBMS_JOB, DBMS_RANDOM setting from Public has been completed."
+        ],
+        "diag": "Configure DBA account roles",
+        "num": 9,
+        "status": "Action Completed"
+    }
+}
+
+PLAY RECAP *********************************************************************
+10.0.2.11                  : ok=10   changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+

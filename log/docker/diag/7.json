@@ -1,0 +1,1 @@
+{"num": 7, "diag": "Audit docker.socket", "weak": true, "reason": ["/lib/systemd/system/docker.socket file does not have audit settings applied."], "how_action": ["apply audit setting"], "bypass": null}

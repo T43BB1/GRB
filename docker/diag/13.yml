@@ -1,0 +1,56 @@
+- hosts: intranetweb
+  tasks:
+    # header
+    - set_fact:
+        diag: Set ownership for docker.service
+        num: 13
+    - debug:
+        var: diag
+    - debug:
+        var: num
+    
+    # body
+    - shell: "stat -c %U:%G /lib/systemd/system/docker.service"
+      register: ret
+      ignore_errors: true
+    
+    - debug:
+        var: ret
+    
+    # weak?
+    - set_fact:
+        weak: "{{ret.stdout != 'root:root'}}"
+    - debug:
+        var: weak
+    
+    - set_fact:
+        reason: "{{['The owner and group of the docker.service file are not root.']}}"
+      when: weak
+    
+    - set_fact:
+        reason: "{{['The owner and group of the docker.service file are root.']}}"
+      when: not weak
+
+    - set_fact:
+        bypass: null
+    - debug:
+        var: bypass
+
+    # result
+    - block:
+        - debug:
+            msg: 취약
+        - copy:
+            content: "{{ {'num':num, 'diag':diag, 'weak':True , 'reason':reason, 'how_action': ['Set ownership'], 'bypass':bypass} | to_json }}"
+            dest: "../../log/docker/diag/{{num}}.json"
+          delegate_to: localhost
+      when: weak
+    
+    - block:
+        - debug:
+            msg: 양호
+        - copy:
+            content: "{{ {'num':num, 'diag':diag, 'weak':False , 'reason':reason, 'bypass':bypass} | to_json }}"
+            dest: "../../log/docker/diag/{{num}}.json"
+          delegate_to: localhost
+      when: not weak

@@ -1,0 +1,59 @@
+# SUID, SGID Sticky bit 설정 파일 점검_setup
+---
+- name: actionlist 10
+  hosts: intranetweb
+  gather_facts: false
+  tasks:
+
+  - set_fact:
+      diag: Remove setting files of SUID, SGID Sticky bit and Checking regularly
+      num: 10
+
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  - name: Fix ownership of sudo binary
+    shell: |
+      chown root:root /usr/bin/sudo
+      chmod 4755 /usr/bin/sudo
+    register: chown_chmod_sudo
+    ignore_errors: yes
+
+  - name: Find vulnerable SUID/SGID files
+    shell: "find / -user root -type f \\( -perm -4000 -o -perm -2000 \\) -xdev -exec ls -al{}\\ -print 2>/dev/null"
+    register: vulnerable_files
+    ignore_errors: yes
+
+  - name: Check if vulnerable files list exists
+    debug:
+      msg: "No vulnerable SUID/SGID files found."
+    when: vulnerable_files.stdout_lines | length == 0
+
+  - name: Display vulnerable files found
+    debug:
+      msg: "Vulnerable SUID/SGID files found: {{ vulnerable_files.stdout_lines | join(', ') }}"
+    when: vulnerable_files.stdout_lines | length > 0
+
+  - name: Remove SUID and SGID bits on vulnerable files
+    shell: chmod -s {{ item }}
+    loop: "{{ vulnerable_files.stdout_lines }}"
+    when:
+      - item not in ['/usr/bin/sudo', '/usr/bin/mount', '/usr/bin/umount', '/usr/bin/pkexec']
+    register: suid_sgid_removed
+    ignore_errors: yes
+
+  # action result
+
+  - debug:
+      msg: 조치완료
+  # 조치 결과 디테일 / status는 점검 완료
+  - set_fact:
+      result: "{{ {'num': num, 'diag': diag, 'details': ['hihi check~ Deleting the setting file of SUID, SGID, and Sticky bit is completed'], 'status': 'Action Completed'} }}"
+  - copy:
+      content: "{{ result }}"
+      dest: /home/ubuntu/grbprj/log/linux/action/10.json
+    delegate_to: localhost
+  - debug:
+      var: result

@@ -1,0 +1,1 @@
+{"num": 8, "diag": "Restrict SYSDBA login", "weak": true, "reason": ["SYSDBA login restriction is not applied."], "how_action": [" Action will apply the SYSDBA login restriction. Do you want to proceed? "]}

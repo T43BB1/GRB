@@ -1,0 +1,81 @@
+
+PLAY [checklist 1] *************************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "diag": "Check root remote access restriction"
+}
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "num": 1
+}
+
+TASK [Check if telnet is installed] ********************************************
+fatal: [10.0.2.11]: FAILED! => {"changed": true, "cmd": ["which", "telnet"], "delta": "0:00:00.010095", "end": "2024-10-28 12:32:38.271114", "msg": "non-zero return code", "rc": 1, "start": "2024-10-28 12:32:38.261019", "stderr": "which: no telnet in (/home/grbsec/.local/bin:/home/grbsec/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin)", "stderr_lines": ["which: no telnet in (/home/grbsec/.local/bin:/home/grbsec/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin)"], "stdout": "", "stdout_lines": []}
+...ignoring
+
+TASK [Check pts configuration in /etc/securetty for telnet] ********************
+skipping: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "weak": false
+}
+
+TASK [Check if ssh is installed] ***********************************************
+changed: [10.0.2.11]
+
+TASK [Check PermitRootLogin in /etc/ssh/sshd_config (SSH check)] ***************
+fatal: [10.0.2.11]: FAILED! => {"changed": true, "cmd": "cat /etc/ssh/sshd_config | grep PermitRootLogin", "delta": "0:00:00.017331", "end": "2024-10-28 12:32:41.824222", "msg": "non-zero return code", "rc": 1, "start": "2024-10-28 12:32:41.806891", "stderr": "cat: /etc/ssh/sshd_config: Permission denied", "stderr_lines": ["cat: /etc/ssh/sshd_config: Permission denied"], "stdout": "", "stdout_lines": []}
+...ignoring
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "weak": true
+}
+
+TASK [debug] *******************************************************************
+skipping: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+skipping: [10.0.2.11]
+
+TASK [copy] ********************************************************************
+skipping: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": "취약"
+}
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [copy] ********************************************************************
+ok: [10.0.2.11 -> localhost]
+
+TASK [debug] *******************************************************************
+skipping: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+skipping: [10.0.2.11]
+
+TASK [copy] ********************************************************************
+skipping: [10.0.2.11]
+
+PLAY RECAP *********************************************************************
+10.0.2.11                  : ok=14   changed=3    unreachable=0    failed=0    skipped=7    rescued=0    ignored=2   
+

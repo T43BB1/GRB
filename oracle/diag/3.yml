@@ -1,0 +1,100 @@
+---
+- name: checklist 3
+  hosts: intranetweb
+  
+  tasks:
+  # header
+  - set_fact:
+      diag: Align security policies and password policies
+      num: 3
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  # body
+  - name: SQL shell
+    shell: echo "SELECT PROFILE, RESOURCE_NAME, LIMIT FROM DBA_PROFILES WHERE PROFILE = 'DEFAULT' AND RESOURCE_NAME LIKE 'PASSWORD%';" | docker exec -i oraclegrb sqlplus C##grb/dkagh1
+    register: result_pw
+
+  # - name: Exist or Not
+  #   debug:
+  #     msg: >
+  #       {{ result.stdout | regex_search('PASSWORD%') }}
+  #       {% if 'PASSWORD_LIFE_TIME' in result.stdout and 'PASSWORD_REUSE_TIME' in result.stdout and 'PASSWORD_REUSE_MAX' in result.stdout and 'PASSWORD_VERIFY_FUNCTION' in result.stdout and 'PASSWORD_LOCK_TIME' in result.stdout and 'PASSWORD_LOCK_TIME' in result.stdout %}
+  #         Exist
+  #         {% if 'UNLIMIT' in result.stdout %}
+  #           But Weak..
+  #         {% endif %}
+  #       {% else %}
+  #         NO WAY!
+  #       {% endif %}
+
+  - name: SQL shell
+    shell: |
+          docker exec -i oraclegrb sqlplus C##grb/dkagh1 <<EOF
+          SET LINESIZE 150
+          COLUMN PROFILE FORMAT A10
+          COLUMN RESOURCE_NAME FORMAT A25
+          COLUMN LIMIT FORMAT A10
+          SELECT PROFILE, RESOURCE_NAME, LIMIT FROM DBA_PROFILES WHERE PROFILE = 'DEFAULT' AND RESOURCE_NAME LIKE 'PASSWORD%';
+          EXIT;
+          EOF
+    register: result_pw2
+
+  ####
+  # list for action and test
+  - set_fact:
+      weak_resource_names: []  # list for action
+  - name: Extract RESOURCE_NAMEs with 'UNLIMITED' limit
+    set_fact:
+      weak_resource_names: "{{ result_pw2.stdout_lines | select('search', 'UNLIMITED') | union(result_pw2.stdout_lines | select('search', 'NULL')) | map('regex_search', '^DEFAULT\\s+([A-Z_]+)\\s+.*\\s+(UNLIMITED|NULL)', '\\1') | flatten }}"
+  - debug:
+      msg: "{{ weak_resource_names }}"
+  ####
+
+  # weak?
+  - set_fact:
+      weak: "{{ 'PASSWORD_LIFE_TIME' not in result_pw.stdout or 'PASSWORD_REUSE_TIME' not in result_pw.stdout or 'PASSWORD_REUSE_MAX' not in result_pw.stdout or 'PASSWORD_VERIFY_FUNCTION' not in result_pw.stdout or 'PASSWORD_LOCK_TIME' not in result_pw.stdout or 'PASSWORD_LOCK_TIME' not in result_pw.stdout or 'UNLIMIT' in result_pw.stdout }}"
+
+  - debug:
+      var: weak
+
+  # result
+ 
+  - block:
+      - debug:
+          msg: 해당없음
+      - set_fact:
+          result: "{{{'num':num, 'diag':diag, 'weak':none, 'reason':['N/A']}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: "../../log/oracle/diag/{{num}}.json"
+        delegate_to: localhost
+    when: weak is none
+
+  - block:
+      - debug:
+          msg: 취약
+      - set_fact:
+          result: "{{{'num':num, 'diag':diag, 'weak':True, 'reason':['Password policy named '+weak_resource_names | join(', ')+' sets to default.'], 'bypass':[{'weak_resource_names':weak_resource_names}], 'how_action':[' Action will set the '+weak_resource_names | join(', ')+' setting. You can enter new values. Do you want to proceed? '], 'dual_select':[{'1':'Set', '2':'Temporary'}], 'dual_second':['Set', 'new_values']}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: "../../log/oracle/diag/{{num}}.json"
+        delegate_to: localhost
+    when: weak is not none and weak
+
+  - block:
+      - debug:
+          msg: 양호
+      - set_fact:
+          result: "{{{'num':num, 'diag':diag, 'weak':False, 'reason':['Password policies are set to compliance.']}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: "../../log/oracle/diag/{{num}}.json"
+        delegate_to: localhost
+    when: weak is not none and not weak
+  
+ 
+  - debug:
+      var: result

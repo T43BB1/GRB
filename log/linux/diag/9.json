@@ -1,0 +1,11 @@
+{
+    "diag": "Check /etc/hosts file owner and permission",
+    "how_action": [
+        "Action will change the owner and permissions of the /etc/hosts file. Do you want to proceed?"
+    ],
+    "num": 9,
+    "reason": [
+        "Owner of /etc/hosts file is not root or permissions are set over 644"
+    ],
+    "weak": true
+}

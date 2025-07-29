@@ -1,0 +1,1 @@
+{"num": 12, "diag": "Enable logging", "weak": true, "reason": ["The audit log storage policy for the DBMS is not applied."], "how_action": ["Action will apply the audit log storage policy for the DBMS. Do you want to proceed? "]}

@@ -1,0 +1,64 @@
+- name: checklist 4
+  hosts: intranetweb
+  
+  tasks:
+  # header
+  - set_fact:
+      diag: 파일 업로드 및 다운로드 제한
+      num: 4
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  # body
+  - name: Check setting
+    command: docker exec -i nginxgrb bash -c "cat /etc/nginx/nginx.conf | grep 'client_max_body_size'"
+    register: grep_result
+    ignore_errors: yes
+    changed_when: false
+  # weak?
+  - set_fact:
+      weak: "{{ not grep_result.stdout }}"
+  - debug:
+      var: weak
+
+  # result
+  - block:
+      - debug:
+          msg: 해당없음
+      - set_fact:
+          result: "{{{'num': num, 'diag': diag, 'weak': none, 'reason': ['N/A']} }}"
+      - copy:
+          content: "{{ result }}"
+          dest: /home/ubuntu/grbprj/log/nginx/diag/4.json
+        delegate_to: localhost
+    when: weak is none
+
+  - block:
+      - debug:
+          msg: 취약
+      - set_fact:
+          result: "{{{'num': num, 'diag': diag, 'weak': True, 'reason': ['client_max_body_size is not set.'], 'bypass': [{}], 'how_action': ['Action will add \"client_max_body_size 20M;\" to nginx.conf. Do you want to proceed?']} }}"
+      - copy:
+          content: "{{ result }}"
+          dest: /home/ubuntu/grbprj/log/nginx/diag/4.json
+        delegate_to: localhost
+    when: weak is not none and weak
+
+  - block:
+      - debug:
+          msg: 양호
+      - set_fact:
+          result: "{{{'num': num, 'diag': diag, 'weak': False, 'reason': ['client_max_body_size is set']} }}"
+      - copy:
+          content: "{{ result }}"
+          dest: /home/ubuntu/grbprj/log/nginx/diag/4.json
+        delegate_to: localhost
+    when: weak is not none and not weak
+  
+  - name: Sorting result
+    set_fact:
+      result: "{{ result | sort(attribute='num') }}"
+  - debug:
+      var: result

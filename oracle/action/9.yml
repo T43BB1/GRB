@@ -1,0 +1,36 @@
+---
+- name: checklist 9
+  hosts: intranetweb
+  
+  tasks:
+
+  # header
+  - set_fact:
+      diag: Configure DBA account roles
+      num: 9
+  - debug:
+      var: diag
+  - debug:
+      var: num
+  
+  - set_fact:
+      weak_table: "{{ bypass[0].weak_table }}"
+  - debug:
+      msg: "{{ weak_table }}"
+
+  # action result
+ 
+  - debug:
+      msg: 조치완료
+  # 조치 결과 디테일 / status는 점검 완료
+  - set_fact:
+      result: "{{{'num':num, 'diag':diag, 'details':['Restriction of The Role for DBA account named '+weak_table | join(', ')+' setting from Public has been completed.'], 'status':'Action Completed'}}}"
+  - copy:
+      content: "{{ result }}"
+      dest: "../../log/oracle/action/{{num}}.json"
+    delegate_to: localhost
+  - debug:
+      var: result
+
+  - name: revoke role from public
+    shell: echo "revoke ROLE from PUBLIC;" | docker exec -i oraclegrb sqlplus C##grb/dkagh1

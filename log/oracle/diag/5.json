@@ -1,0 +1,1 @@
+{"num": 5, "diag": "Restrict remote access to the DB server", "weak": false, "reason": ["The remote_os_authent parameter does not exist, and Oracle no longer permits remote OS authentication starting from version 12c, and this version is higher"]}

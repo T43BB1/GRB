@@ -1,0 +1,92 @@
+---
+- name: checklist 1
+  hosts: intranetweb
+  
+  tasks:
+  # header
+  - set_fact:
+      diag: Change default account and password
+      num: 1
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  # body
+  - set_fact:
+      id_pw_list:
+        - { id: "scott", pw: "tiger" }
+        - { id: "scott", pw: "tigger" }
+        - { id: "dbsnmp", pw: "dbsnmp" }
+        - { id: "tracesvr", pw: "trace" }
+        - { id: "ordplugins", pw: "ordplugins" }
+        - { id: "ctxsys", pw: "ctxsys" }
+        - { id: "adams", pw: "wood" }
+        - { id: "clark", pw: "clth" }
+        - { id: "lbacsys", pw: "lbacsys" }
+        - { id: "system", pw: "manager" }
+        - { id: "sys", pw: "chageon_install" }
+        - { id: "outln", pw: "outln" }
+        - { id: "ordsys", pw: "ordsys" }
+        - { id: "mdsys", pw: "mdsys" }
+        - { id: "blake", pw: "papr" }
+        - { id: "jones", pw: "steel" }
+      weak_ids: []
+# or 'ORA-28000' in result_shell.stdout
+  - name: 
+    include_tasks: 1_sub.txt
+    loop: "{{ id_pw_list }}"
+    loop_control:
+      loop_var: my_item
+
+  # weak?
+  - set_fact:
+      weak: "{{ weak_ids != [] }}"
+  - debug:
+      var: weak
+
+  - debug:
+      msg: "{{ weak_ids }}"
+
+  - block:
+      - debug:
+          msg: 해당없음
+      - set_fact:
+          result: "{{{'num':num, 'diag':diag, 'weak':none, 'reason':['N/A']}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: "../../log/oracle/diag/{{num}}.json"
+        delegate_to: localhost
+    when: weak is none
+
+  - block:
+      - debug:
+          msg: 취약
+      - set_fact:
+          result: "{{{'num':num, 'diag':diag, 'weak':True, 'reason':['Accounts with '+weak_ids | join(', ')+' login successful using default ID/PW set'], 'bypass':[{'weak_ids':weak_ids}], 'how_action':[' Action will drop or alter pw the '+weak_ids | join(', ')+' account. You can choose Drop or Alter. Do you want to proceed? '], 'dual_select':[{'1':'Drop', '2':'Alter'}], 'dual_second':['Alter', 'new_passwords']}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: "../../log/oracle/diag/{{num}}.json"
+        delegate_to: localhost
+    when: weak is not none and weak
+
+  - block:
+      - debug:
+          msg: 양호
+      - set_fact:
+          result: "{{{'num':num, 'diag':diag, 'weak':False, 'reason':['no accounts login using default ID/PW set']}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: "../../log/oracle/diag/{{num}}.json"
+        delegate_to: localhost
+    when: weak is not none and not weak
+  
+#   - name: Sorting result
+#     set_fact:
+#       result: "{{ result | sort(attribute='num') }}"
+  - debug:
+      var: result
+    # sdf | regex_search('sd') != none 으로 해야함 빈 문자열이 아니고
+    #{% if 'ORA-01017' in result_shell.stdout or 'ORA-28000' in result_shell.stdout or 'ORA-28009' in result_shell.stdout or 'ORA-40371' in result_shell.stdout %}
+
+    #result: "{{result + [{'num':num, 'diag':diag, 'weak':True, 'weak_ids':weak_ids,

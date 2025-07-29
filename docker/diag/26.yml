@@ -1,0 +1,68 @@
+- hosts: intranetweb
+  tasks:
+    # header
+    - set_fact:
+        diag: Enable content trust for Docker
+        num: 26
+    - debug:
+        var: diag
+    - debug:
+        var: num
+    
+    # body
+    - shell: echo $DOCKER_CONTENT_TRUST
+      register: ret
+      ignore_errors: true
+    - debug:
+        var: "{{ret}}"
+    
+    # weak?
+    - set_fact:
+        weak: ret.stdout == ''
+    - debug:
+        var: weak
+    
+    - set_fact:
+        reason: "{{[]}}"
+      when: weak is none
+    
+    - set_fact:
+        reason: "{{['Docker content trust is disabled.']}}"
+      when: weak is not none and weak
+    
+    - set_fact:
+        reason: "{{['Docker content trust is enabled.']}}"
+      when: weak is not none and not weak
+
+    - set_fact:
+        bypass: null
+    - debug:
+        var: bypass
+
+    # result
+    - block:
+        - debug:
+            msg: 해당없음
+        - copy:
+            content: "{{ {'num':num, 'diag':diag, 'weak':none , 'reason':reason, 'bypass':bypass} | to_json }}"
+            dest: "../../log/docker/diag/{{num}}.json"
+          delegate_to: localhost
+      when: weak is none
+    
+    - block:
+        - debug:
+            msg: 취약
+        - copy:
+            content: "{{ {'num':num, 'diag':diag, 'weak':True , 'reason':reason, 'how_action':['enable docker content trust'], 'bypass':bypass} | to_json }}"
+            dest: "../../log/docker/diag/{{num}}.json"
+          delegate_to: localhost
+      when: weak is not none and weak
+    
+    - block:
+        - debug:
+            msg: 양호
+        - copy:
+            content: "{{ {'num':num, 'diag':diag, 'weak':False , 'reason':reason, 'bypass':bypass} | to_json }}"
+            dest: "../../log/docker/diag/{{num}}.json"
+          delegate_to: localhost
+      when: weak is not none and not weak

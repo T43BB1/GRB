@@ -1,0 +1,11 @@
+{
+    "diag": "Check /etc/shadow file owner and permission",
+    "how_action": [
+        "Action will change the owner and permissions of the /etc/shadow file. Do you want to proceed?"
+    ],
+    "num": 8,
+    "reason": [
+        "Owner of /etc/shadow file is not root or permissions are set over 400"
+    ],
+    "weak": true
+}

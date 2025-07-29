@@ -1,0 +1,1 @@
+{"num": 22, "diag": "Set access permissions for daemon.json file", "weak": null, "reason": ["/etc/docker/daemon.json deos not exist"], "how_action": ["Set access permission"], "bypass": null}

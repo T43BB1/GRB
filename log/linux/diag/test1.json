@@ -1,0 +1,1 @@
+"{'num': 1, 'diag': 'Check root remote access restriction', 'weak': True, 'reason': ['Telnet pts configuration is not found', 'Not set to PermitRootLogin no'], 'bypass': [{'weak_ids': 0}], 'how_action': ['Action will set restriction of telnet/ssh access of root. Do you want to proceed?']}\""

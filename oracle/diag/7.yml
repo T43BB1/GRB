@@ -1,0 +1,67 @@
+---
+- name: checklist 7
+  hosts: intranetweb
+  
+  tasks:
+
+  # header
+  - set_fact:
+      diag: Set listener password
+      num: 7
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  # body
+
+  - name: SQL shell
+    shell: docker exec -i oraclegrb bash -c "cat /opt/oracle/oradata/dbconfig/FREE/listener.ora"
+    register: result_7
+
+  # weak?
+  - set_fact:
+      weak: "{{ 'PORT = 1521' in result_7.stdout }}" #원래는 1539임. 취약 테스트
+  - debug:
+      var: weak
+
+  - set_fact:
+      weak_port: [ new_port ]
+  # result
+ 
+  - block:
+      - debug:
+          msg: 해당없음
+      - set_fact:
+          result: "{{{'num':num, 'diag':diag, 'weak':none, 'reason':['N/A']}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: "../../log/oracle/diag/{{num}}.json"
+        delegate_to: localhost
+    when: weak is none
+
+  - block:
+      - debug:
+          msg: 취약
+      - set_fact:
+          result: "{{{'num':num, 'diag':diag, 'weak':True, 'reason':['As it is a well-known port, Port 1539 for listener file is set to the default configuration.'], 'bypass':[{'weak_port':weak_port}], 'how_action':['Action will be changed to a new port. Do you want to proceed? '], 'dual_select':[{'1':'enter', '2':'Temporary'}], 'dual_second':['enter', 'new_port']}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: "../../log/oracle/diag/{{num}}.json"
+        delegate_to: localhost
+    when: weak is not none and weak
+
+  - block:
+      - debug:
+          msg: 양호
+      - set_fact:
+          result: "{{{'num':num, 'diag':diag, 'weak':False, 'reason':['The listener file exists and is configured with a non-default port.']}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: "../../log/oracle/diag/{{num}}.json"
+        delegate_to: localhost
+    when: weak is not none and not weak
+  
+ 
+  - debug:
+      var: result

@@ -1,0 +1,1 @@
+{"num": 13, "diag": "Set ownership for docker.service", "weak": false, "reason": ["The owner and group of the docker.service file are root."], "bypass": null}

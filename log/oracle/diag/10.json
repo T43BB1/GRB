@@ -1,0 +1,1 @@
+{"num": 10, "diag": "Set OS_ROLES, REMOTE_OS_ROLES", "weak": false, "reason": ["Permissions granted by an OS group not controlled by database access control are restricted."]}

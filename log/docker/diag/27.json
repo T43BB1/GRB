@@ -1,0 +1,1 @@
+{"num": 27, "diag": "Set SELinux security options for containers", "weak": true, "reason": ["SELinux security options are disabled."], "how_action": ["enable SELinux security options"], "bypass": null}

@@ -1,0 +1,20 @@
+- hosts: intranetweb
+  tasks:
+     
+    - set_fact:
+        diag: Set ownership for docker.socket
+        num: 15
+    - debug:
+        var: diag
+    - debug:
+        var: num
+    
+    - shell: chown root:root /lib/systemd/system/docker.socket
+
+    - block:
+        - set_fact:
+            result: "{{{'num':num, 'diag':diag, 'details':['Assign ownership to docker.socket.'], 'status':'Action Completed'}}}"
+        - copy:
+            content: "{{ result }}"
+            dest: "../../log/docker/action/{{num}}.json"
+          delegate_to: localhost

@@ -1,0 +1,1 @@
+{"num": 9, "diag": "Configure DBA account roles", "details": ["Restriction of The Role for DBA account named DBMS_LOB, UTL_TCP, UTL_HTTP, UTL_FILE, UTL_INADDR, UTL_SMTP, DBMS_JOB, DBMS_RANDOM setting from Public has been completed."], "status": "Action Completed"}

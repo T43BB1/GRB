@@ -1,0 +1,65 @@
+# SUID, SGID, Sticky bit 설정 파일 점검_check
+---
+- name: checklist 10
+  hosts: intranetweb
+  tasks:
+    # header
+
+    - set_fact:
+        diag: Check SUID and SGID settings
+        num: 10
+
+    - debug:
+        var: diag
+    - debug:
+        var: num
+
+    # body
+    - name: Find files with SUID or SGID bit set
+      shell: |
+        find / -path /proc -prune -o -path /sys -prune -o -path /dev -prune -o \
+        -user root -type f \( -perm -4000 -o -perm -2000 \) -exec ls -lg {} \;
+      register: suid_sgid_files
+      ignore_errors: yes
+
+    # checking weak
+    - set_fact:
+        weak: suid_sgid_files.stdout != ""
+
+    - debug:
+        var: weak
+
+    # result
+    - block:
+        - debug:
+            msg: "해당없음"
+        - set_fact:
+            result: "{{ {'num': num, 'diag': diag, 'weak': none, 'reason': ['N/A']} }}"
+        - copy:
+            content: "{{ result | to_nice_json }}"
+            dest: /home/ubuntu/grbprj/log/linux/diag/10.json
+          delegate_to: localhost
+      when: weak is none
+
+    - block:
+        - debug:
+            msg: "취약"
+        - set_fact:
+            result: "{{ {'num': num, 'diag': diag, 'weak': True, 'reason': ['The main executable file has SUID and SGID permissions set'], 'how_action': ['Action will change the SUID and SGID settings for the main executable file. Do you want to proceed?']} }}"
+        - copy:
+            content: "{{ result | to_nice_json }}"
+            dest: /home/ubuntu/grbprj/log/linux/diag/10.json
+          delegate_to: localhost
+      when: weak is not none and weak
+
+    - block:
+        - debug:
+            msg: "양호"
+        - set_fact:
+            result: "{{ {'num': num, 'diag': diag, 'weak': False, 'reason': ['The permissions of the main executable file do not have settings for SUID and SGID']} }}"
+        - copy:
+            content: "{{ result | to_nice_json }}"
+            dest: /home/ubuntu/grbprj/log/linux/diag/10.json
+          delegate_to: localhost
+      when: weak is not none and not weak
+

@@ -1,0 +1,20 @@
+- hosts: intranetweb
+  tasks:
+     
+    - set_fact:
+        diag: Set ownership for daemon.json
+        num: 21
+    - debug:
+        var: diag
+    - debug:
+        var: num
+
+    - shell: chown root:root /etc/docker/daemon.json
+
+    - block:
+        - set_fact:
+            result: "{{{'num':num, 'diag':diag, 'details':['Assign ownership to daemon.json.'], 'status':'Action Completed'}}}"
+        - copy:
+            content: "{{ result }}"
+            dest: "../../log/docker/action/{{num}}.json"
+          delegate_to: localhost

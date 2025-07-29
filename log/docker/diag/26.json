@@ -1,0 +1,1 @@
+{"num": 26, "diag": "Enable content trust for Docker", "weak": true, "reason": ["Docker content trust is disabled."], "how_action": ["enable docker content trust"], "bypass": null}

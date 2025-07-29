@@ -1,0 +1,1 @@
+{"num": 9, "diag": "Limit network traffic between containers using default bridge", "weak": true, "reason": ["The default bridge is enabled."], "how_action": ["Disable default bridge"], "bypass": null}

@@ -1,0 +1,81 @@
+---
+- name: checklist 12
+  hosts: intranetweb
+  
+  tasks:
+
+  # header
+  - set_fact:
+      diag: Enable logging
+      num: 12
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  # body
+  - name: SQL Shell
+    shell: echo "show parameter audit_trail;" | docker exec -i oraclegrb sqlplus C##grb/dkagh1
+    register: result_12
+  - set_fact:
+      clean_output: "{{ result_12.stdout_lines | map('regex_replace', '\\t+', ' ') | list }}"
+  - debug:
+      msg: "{{ clean_output }}"
+  - set_fact:
+      audit_trail_line: "{{ clean_output | select('search', '^audit_trail\\s') | list }}"
+  - debug:
+      msg: "{{ audit_trail_line }}"
+  - set_fact:
+      report: >
+        {% if 'NONE' in audit_trail_line | join(' ') %}
+          weak
+        {% else %}
+          {{ audit_trail_line }}
+        {% endif %}
+  - debug:
+      msg: "{{ report }}"
+
+  # weak?
+  - set_fact:
+      weak: "{{ report | regex_search('weak') }}"
+  - debug:
+      var: weak
+
+  # result
+ 
+  - block:
+      - debug:
+          msg: 해당없음
+      - set_fact:
+          result: "{{{'num':num, 'diag':diag, 'weak':none, 'reason':['N/A']}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: "../../log/oracle/diag/{{num}}.json"
+        delegate_to: localhost
+    when: weak is none
+
+  - block:
+      - debug:
+          msg: 취약
+      - set_fact:
+          result: "{{{'num':num, 'diag':diag, 'weak':True, 'reason':['The audit log storage policy for the DBMS is not applied.'], 'how_action':['Action will apply the audit log storage policy for the DBMS. Do you want to proceed? ']}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: "../../log/oracle/diag/{{num}}.json"
+        delegate_to: localhost
+    when: weak is not none and weak
+
+  - block:
+      - debug:
+          msg: 양호
+      - set_fact:
+          result: "{{{'num':num, 'diag':diag, 'weak':False, 'reason':['The audit log storage policy for the DBMS is applied.']}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: "../../log/oracle/diag/{{num}}.json"
+        delegate_to: localhost
+    when: weak is not none and not weak
+  
+ 
+  - debug:
+      var: result

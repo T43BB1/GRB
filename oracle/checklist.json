@@ -1,0 +1,50 @@
+{
+    "1": {
+        "num": 1,
+        "diag": "Change default account and password"
+    },
+    "2": {
+        "num": 2,
+        "diag": "Remove unnecessary accounts"
+    },
+    "3": {
+        "num": 3,
+        "diag": "Align security policies and password policies"
+    },
+    "4": {
+        "num": 4,
+        "diag": "Configure administrator privileges"
+    },
+    "5": {
+        "num": 5,
+        "diag": "Restrict remote access to the DB server"
+    },
+    "6": {
+        "num": 6,
+        "diag": "Remove user access to system tables"
+    },
+    "7": {
+        "num": 7,
+        "diag": "Set listener password"
+    },
+    "8": {
+        "num": 8,
+        "diag": "Restrict SYSDBA login"
+    },
+    "9": {
+        "num": 9,
+        "diag": "Configure DBA account roles"
+    },
+    "10": {
+        "num": 10,
+        "diag": "Set OS_ROLES, REMOTE_OS_ROLES"
+    },
+    "11": {
+        "num": 11,
+        "diag": "Apply the latest security patches"
+    },
+    "12": {
+        "num": 12,
+        "diag": "Enable logging"
+    }
+}

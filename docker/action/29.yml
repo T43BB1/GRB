@@ -1,0 +1,20 @@
+- hosts: intranetweb
+  tasks:
+     
+    - set_fact:
+        diag: Prohibit privileged port mapping for containers
+        num: 29
+    - debug:
+        var: diag
+    - debug:
+        var: num
+    
+    - shell: chmod 644 /etc/sysconfig/docker
+
+    - block:
+        - set_fact:
+            result: "{{{'num':num, 'diag':diag, 'details':['Disallow privileged port mapping for containers.'], 'status':'Action Completed'}}}"
+        - copy:
+            content: "{{ result }}"
+            dest: "../../log/docker/action/{{num}}.json"
+          delegate_to: localhost

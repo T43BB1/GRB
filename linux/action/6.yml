@@ -1,0 +1,55 @@
+# 파일 및 디렉터리 소유자 설정_setup
+
+---
+- name: actionlist 6
+  hosts: intranetweb
+  tasks:
+
+  - set_fact:
+      diag: Delete unneeded unowned files and directories and Change ownership of unowned files and directories
+      num: 6
+    
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  - name: Find unowned files and directories
+    shell: find /etc /tmp /bin /sbin \( -nouser -o -nogroup \) -xdev -print 2> /dev/null
+    register: unowned_files
+
+  - name: Check if there are unowned files
+    debug:
+      msg: >
+        Unowned files or directories found:
+        {{ unowned_files.stdout }}
+    when: unowned_files.stdout != ""
+
+  - name: Prompt user to decide on files
+    pause:
+      prompt: "Do you want to delete unnecessary files? Type 'yes' to delete, 'no' to change ownership."
+    register: user_input
+
+  - name: Delete unneeded unowned files
+    shell: rm -rf {{ item }}
+    loop: "{{ unowned_files.stdout_lines }}"
+    when: user_input.user_input | trim | lower == 'yes'
+
+  - name: Change ownership of needed unowned files
+    command: chown root:root {{ item }}
+    loop: "{{ unowned_files.stdout_lines }}"
+    when: user_input.user_input | trim | lower == 'no'
+
+  # action result
+ 
+  - debug:
+      msg: 조치완료
+  # 조치 결과 디테일 / status는 점검 완료
+  - set_fact:
+      result: "{{ {'num': num, 'diag': diag, 'details': ['hihi check~ Deleting files or directories without user and group is completed'], 'status': 'Action Completed'} }}"
+  - copy:
+      content: "{{ result }}"
+      dest: /home/ubuntu/grbprj/log/linux/action/6.json
+    delegate_to: localhost
+  - debug:
+      var: result

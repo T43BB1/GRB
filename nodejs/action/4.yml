@@ -1,0 +1,49 @@
+# okay
+---
+- name: actionlist 4
+  hosts: intranetweb
+  tasks:
+  # 명령어는 이거임 ansible-playbook actionlists/4_test.yml -e '{'bypass': [{'log_dir': /var/lib/ghost/content/logs, 'weak_log_dir':true , 'weak_log_files' :  "/var/lib/ghost/content/logs", "/var/lib/ghost/content/logs/http___localhost_2368_development.error.log", "/var/lib/ghost/content/logs/http___localhost_2368_development.log", "/var/lib/ghost/content/logs/yearhui.log","/var/lib/ghost/content/logs/loglog","/var/lib/ghost/content/logs/taehui.log"}]}'
+  - set_fact:
+      diag: 로그 디렉터리 및 파일 권한 설정
+      num: 4
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  - name: Change permissions for weak log directory
+    shell: |
+      docker exec -i expressgrb bash -c "
+      chown node:node {{ bypass[0].log_dir }} 
+      chmod 750 {{ bypass[0].log_dir }}"
+    when: bypass[0].weak_log_dir
+
+  - name: Change permissions for weak log files
+    shell: |
+      docker exec -i expressgrb bash -c "
+      {% for file in bypass[0].weak_log_files %}
+      chown node:node {{ file }} 
+      chmod 640 {{ file }}
+      {% endfor %}"
+    when: bypass[0].weak_log_files is defined and bypass[0].weak_log_files | length > 0
+
+  - name: check the result of the action
+    shell: docker exec -i expressgrb bash -c "ls -ld {{ item }}"
+    with_items: "{{ bypass[0].weak_log_files }}"
+    register: log_dir_check
+
+
+  # action result
+  - set_fact:
+      detail_description: "Update Permission Successful."
+      msg: 조치완료
+  # 조치 결과 디테일 / status는 점검 완료
+  - set_fact:
+      result: "{{{'num':num, 'diag':diag, 'details':[detail_description, log_dir_check.results ], 'status':'Action Completed'}}}"
+  - copy:
+      content: "{{ result }}"
+      dest: /home/ubuntu/grbprj/log/nodejs/action/4.json
+    delegate_to: localhost
+  - debug:
+      var: result

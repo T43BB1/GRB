@@ -1,0 +1,17 @@
+{
+    "bypass": [
+        {
+            "weak_ids": 0
+        }
+    ],
+    "diag": "Check root remote access restriction",
+    "how_action": [
+        "Action will set restriction of telnet/ssh access of root. Do you want to proceed?"
+    ],
+    "num": 1,
+    "reason": [
+        "Telnet pts configuration is not found",
+        "Not set to PermitRootLogin no"
+    ],
+    "weak": true
+}

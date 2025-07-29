@@ -1,0 +1,1 @@
+{"num": 32, "diag": "Limit sharing of host user namespaces", "weak": false, "reason": ["User namespaces are not shared"], "bypass": null}

@@ -1,0 +1,75 @@
+---
+- name: actionlist 1
+  hosts: intranetweb
+  tasks:
+  - set_fact:
+      diag: Change default account and password
+      num: 1
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  - set_fact:
+      alter_ids: "{{ bypass[0].weak_ids }}"
+  - set_fact:
+      new_password: "{{ bypass[2].new_passwords }}"
+    when: bypass[2] is defined
+  - set_fact:
+      drop_ids: "{{ bypass[0].weak_ids }}"
+  - debug:
+      msg: "{{ alter_ids }}"
+  - debug:
+      msg: "{{ new_password }}"
+    when: bypass[2] is defined
+  - debug:
+      msg: "{{ drop_ids }}"
+  - set_fact:
+      drop_ids_list: "{{ drop_ids_list | default([]) + [ item ] }}"
+    loop: "{{ drop_ids }}"
+  - set_fact:
+      new_id_pw_list: "{{ new_id_pw_list | default([]) + [{'id': item.0, 'pw': item.1}] }}"
+    loop: "{{ alter_ids | zip(new_password) | list }}"
+    when: bypass[2] is defined
+  - debug:
+      msg: "{{ drop_ids_list }}"
+  - debug:
+      msg: "{{ new_id_pw_list }}"
+    when: bypass[2] is defined
+
+  - debug:
+      msg: 조치완료
+  # 조치 결과 디테일 / status는 점검 완료
+  - block:
+      - set_fact:
+          result: "{{{'num':num, 'diag':diag, 'details':[drop_ids | join(', ')+' Drop done'], 'status':'Action Completed'}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: "../../log/oracle/action/{{num}}.json"
+        delegate_to: localhost
+    when: bypass[2] is not defined
+  - block:
+      - set_fact:
+          result: "{{{'num':num, 'diag':diag, 'details':[alter_ids | join(', ')+' Alter pw done, new id/pw list is '+new_id_pw_list | join(', ')], 'status':'Action Completed'}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: "../../log/oracle/action/{{num}}.json"
+        delegate_to: localhost
+    when: bypass[2] is defined
+  - debug:
+      var: result
+
+
+  - name: alter pw
+    shell: echo "alter user {{alter_item.id}} identified by {{alter_item.pw}};" | docker exec -i oraclegrb sqlplus C##grb/dkagh1
+    loop: "{{ new_id_pw_list }}"
+    loop_control:
+      loop_var: alter_item
+    when: bypass[2] is defined
+
+  - name: Drop id
+    shell: echo "DROP USER {{drop_item}};" | docker exec -i oraclegrb sqlplus C##grb/dkagh1
+    loop: "{{ drop_ids_list }}"
+    loop_control:
+      loop_var: drop_item
+    when: bypass[2] is not defined

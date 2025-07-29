@@ -1,0 +1,68 @@
+---
+- name: actionlist 1
+  hosts: intranetweb
+  tasks:
+
+  - set_fact:
+      diag: Remove pts/0-x setting and Set PermitRootLogin no
+      num: 1
+    
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  - name: Read JSON file content
+    slurp:
+      src: /home/ubuntu/grbprj/log/linux/diag/1.json
+    register: json_file
+    delegate_to: localhost
+
+  - name: Decode and parse JSON
+    set_fact:
+      json_data: "{{ json_file.content | b64decode | from_json }}"
+
+  - name: Show parsed JSON
+    debug:
+      msg: "{{ json_data }}"
+
+  - name: Comment out pts settings in /etc/securetty (Telnet)
+    lineinfile:
+      path: /etc/securetty
+      state: present
+      regexp: '^pts/[0-9]'
+      line: '# {{ item }}'
+    with_items: "{{ lookup('file', '/etc/securetty').splitlines() }}"
+    when: json_data[0].Bypass | selectattr('why', 'search', 'Telnet pts configuration found') | list | length > 0
+    ignore_errors: yes
+
+  - name: Set PermitRootLogin to no in /etc/ssh/sshd_config (SSH)
+    lineinfile:
+      path: /etc/ssh/sshd_config
+      state: present
+      regexp: '^#?PermitRootLogin'
+      line: 'PermitRootLogin no'
+      backup: yes
+    when: json_data[0].Bypass | selectattr('why', 'search', 'Not set to PermitRootLogin no') | list | length > 0
+
+  - name: Restart sshd to apply changes
+    service:
+      name: sshd
+      state: restarted
+    when: json_data[0].Bypass | selectattr('why', 'search', 'Not set to PermitRootLogin no') | list | length > 0
+
+
+  - debug:
+      msg: 조치완료
+
+  - set_fact:
+      result: "{{ {'num': num, 'diag': diag, 'details': ['hihi check~ Setting restriction of telnet/ssh access for root is completed'], 'status': 'Action Completed'} }}"
+
+  - copy:
+      content: "{{ result }}"
+      dest: /home/ubuntu/grbprj/log/linux/action/1.json
+    delegate_to: localhost
+
+  - debug:
+      var: result
+

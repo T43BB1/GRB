@@ -1,0 +1,1 @@
+{"num": 7, "diag": "Set listener password", "weak": true, "reason": ["As it is a well-known port, Port 1539 for listener file is set to the default configuration."], "bypass": [{"weak_port": ["new_port"]}], "how_action": ["Action will be changed to a new port. Do you want to proceed? "], "dual_select": [{"1": "enter", "2": "Temporary"}], "dual_second": ["enter", "new_port"]}

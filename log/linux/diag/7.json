@@ -1,0 +1,11 @@
+{
+    "diag": "Check /etc/passwd file owner and permission",
+    "how_action": [
+        "Action will change the owner and permissions of the /etc/passwd file. Do you want to proceed?"
+    ],
+    "num": 7,
+    "reason": [
+        "Owner of /etc/passwd file is not root or permissions are set over 644"
+    ],
+    "weak": true
+}

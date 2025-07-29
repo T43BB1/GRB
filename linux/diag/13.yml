@@ -1,0 +1,85 @@
+# Sendmail 버전 점검_check
+---
+- name: checklist 13
+  hosts: intranetweb
+  tasks:
+    # header
+
+    - set_fact:
+        diag: Check Sendmail and Postfix versions
+        num: 13
+
+    - debug:
+        var: diag
+    - debug:
+        var: num
+
+    # body
+    - name: Check if Sendmail is running
+      shell: ps -ef | grep -v grep | grep sendmail
+      register: sendmail_process
+      ignore_errors: yes
+
+    - name: Check Sendmail version if running
+      shell: sendmail -d0.1 < /dev/null | grep -i "Version"
+      when: sendmail_process.stdout != ""
+      register: sendmail_version
+      ignore_errors: yes
+
+    - name: Check if Postfix is running
+      shell: systemctl status postfix | grep running
+      register: postfix_process
+      ignore_errors: yes
+
+    - name: Check Postfix version if running
+      shell: postconf -d | grep mail_version
+      when: postfix_process.stdout != ""
+      register: postfix_version
+      ignore_errors: yes
+
+    # checking weak
+    - set_fact:
+        weak: >
+          {% set sendmail_vuln = sendmail_process.stdout != "" and
+                                  'Version 8.16.1' not in sendmail_version.stdout %}
+          {% set postfix_vuln = postfix_process.stdout != "" and
+                                'mail_version = 3.5.9' not in postfix_version.stdout %}
+          sendmail_vuln or postfix_vuln
+
+    - debug:
+        var: weak
+
+    # result
+    - block:
+        - debug:
+            msg: "해당없음"
+        - set_fact:
+            result: "{{ {'num': num, 'diag': diag, 'weak': none, 'reason': ['N/A']} }}"
+        - copy:
+            content: "{{ result | to_nice_json }}"
+            dest: /home/ubuntu/grbprj/log/linux/diag/13.json
+          delegate_to: localhost
+      when: weak is none
+
+    - block:
+        - debug:
+            msg: "취약"
+        - set_fact:
+            result: "{{ {'num': num, 'diag': diag, 'weak': true, 'reason': ['The versions of Sendmail and Postfix are vulnerable'], 'how_action': ['Action will install the latest security patches for Sendmail and Postfix. Do you want to proceed?']} }}"
+        - copy:
+            content: "{{ result | to_nice_json }}"
+            dest: /home/ubuntu/grbprj/log/linux/diag/13.json
+          delegate_to: localhost
+      when: weak is not none and weak
+
+    - block:
+        - debug:
+            msg: "양호"
+        - set_fact:
+            result: "{{ {'num': num, 'diag': diag, 'weak': false, 'reason': ['The versions of Sendmail and Postfix are the latest versions']} }}"
+        - copy:
+            content: "{{ result | to_nice_json }}"
+            dest: /home/ubuntu/grbprj/log/linux/diag/13.json
+          delegate_to: localhost
+      when: weak is not none and not weak
+

@@ -1,0 +1,107 @@
+# 접속 IP 및 포트 제한_check
+---
+- name: checklist 11
+  hosts: intranetweb
+  tasks:
+    # header
+
+    - set_fact:
+        diag: Check IP and port restrictions
+        num: 11
+
+    - debug:
+        var: diag
+    - debug:
+        var: num
+
+    # body
+    - name: Check if /etc/hosts.deny exists
+      stat:
+        path: /etc/hosts.deny
+      register: hosts_deny_file
+
+    - name: Create /etc/hosts.deny if not exists
+      file:
+        path: /etc/hosts.deny
+        state: touch
+      when: not hosts_deny_file.stat.exists
+
+    - name: Check /etc/hosts.deny configuration
+      shell: cat /etc/hosts.deny
+      register: hosts_deny
+      ignore_errors: yes
+
+    - name: Check if /etc/hosts.allow exists
+      stat:
+        path: /etc/hosts.allow
+      register: hosts_allow_file
+
+    - name: Create /etc/hosts.allow if not exists
+      file:
+        path: /etc/hosts.allow
+        state: touch
+      when: not hosts_allow_file.stat.exists
+
+    - name: Check /etc/hosts.allow configuration
+      shell: cat /etc/hosts.allow
+      register: hosts_allow
+      ignore_errors: yes
+
+    - name: Check iptables rules
+      shell: iptables -nL
+      register: iptables_rules
+      ignore_errors: yes
+
+    - name: Check firewalld rules
+      shell: firewall-cmd --list-all
+      register: firewalld_rules
+      ignore_errors: yes
+
+    # checking weak
+    - set_fact:
+        weak: >
+          {% set deny_issues = ('ALL: ALL' not in hosts_deny.stdout) or
+                               (hosts_allow.stdout == '') or
+                               (iptables_rules.stdout == '') or
+                               (firewalld_rules.stdout == '') %}
+          deny_issues
+
+    - debug:
+        var: weak
+
+    # result
+    - block:
+        - debug:
+            msg: "해당없음"
+        - set_fact:
+            result: "{{ {'num': num, 'diag': diag, 'weak': none, 'reason': ['N/A']} }}"
+        - copy:
+            content: "{{ result | to_nice_json }}"
+            dest: /home/ubuntu/grbprj/log/linux/diag/11.json
+          delegate_to: localhost
+      when: weak is none
+
+
+    - block:
+        - debug:
+            msg: "취약"
+        - set_fact:
+            result: "{{ {'num': num, 'diag': diag, 'weak': true, 'reason': ['IP and port restrictions are not set for specific hosts to allow access'], 'how_action': ['Action will change the IP and port restrictions for specific hosts to allow access. Do you want to proceed?']} }}"
+        - copy:
+            content: "{{ result | to_nice_json }}"
+            dest: /home/ubuntu/grbprj/log/linux/diag/11.json
+          delegate_to: localhost
+      when: weak is not none and weak
+
+
+    - block:
+        - debug:
+            msg: "양호"
+        - set_fact:
+            result: "{{ {'num': num, 'diag': diag, 'weak': false, 'reason': ['IP and port restrictions are set for specific hosts to allow access']} }}"
+        - copy:
+            content: "{{ result | to_nice_json }}"
+            dest: /home/ubuntu/grbprj/log/linux/diag/11.json
+          delegate_to: localhost
+      when: weak is not none and not weak
+

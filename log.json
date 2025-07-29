@@ -1,0 +1,1230 @@
+{
+    "linux": {
+        "1": {
+            "bypass": [
+                {
+                    "weak_ids": 0
+                }
+            ],
+            "diag": "Check root remote access restriction",
+            "how_action": [
+                "Action will set restriction of telnet/ssh access of root. Do you want to proceed?"
+            ],
+            "num": 1,
+            "reason": [
+                "Telnet pts configuration is not found",
+                "Not set to PermitRootLogin no"
+            ],
+            "weak": true,
+            "status": "",
+            "details": []
+        },
+        "2": {
+            "bypass": [
+                {
+                    "reason": "Password complexity and enforce_for_root not applied"
+                }
+            ],
+            "diag": "Check password complexity settings",
+            "how_action": [
+                "Action will set enforce_for_root and password complexity. Do you want to proceed?"
+            ],
+            "num": 2,
+            "reason": [
+                "Password complexity and enforce_for_root settings are not applied"
+            ],
+            "weak": true,
+            "status": "",
+            "details": []
+        },
+        "3": {
+            "bypass": [
+                {
+                    "reason": "Account lockout threshold exceeded 5 attempts"
+                }
+            ],
+            "diag": "Check account lockout threshold settings",
+            "how_action": [
+                "Action will set account lockout threshold to 5 attempts. Do you want to proceed?"
+            ],
+            "num": 3,
+            "reason": [
+                "Account lockout threshold is set to more than 5 attempts"
+            ],
+            "weak": true,
+            "status": "",
+            "details": []
+        },
+        "4": {
+            "bypass": [
+                "root  0 99999 7     ",
+                "bin 19820 0 99999 7     ",
+                "daemon 19820 0 99999 7     ",
+                "adm 19820 0 99999 7     ",
+                "lp 19820 0 99999 7     ",
+                "sync 19820 0 99999 7     ",
+                "shutdown 19820 0 99999 7     ",
+                "halt 19820 0 99999 7     ",
+                "mail 19820 0 99999 7     ",
+                "operator 19820 0 99999 7     ",
+                "games 19820 0 99999 7     ",
+                "ftp 19820 0 99999 7     ",
+                "nobody 19820 0 99999 7     ",
+                "systemd-coredump 20013        ",
+                "dbus 20013        ",
+                "sssd 20013        ",
+                "polkitd 20013        ",
+                "rtkit 20013        ",
+                "pipewire 20013        ",
+                "libstoragemgmt 20013        ",
+                "tss 20013        ",
+                "geoclue 20013        ",
+                "cockpit-ws 20013        ",
+                "cockpit-wsinstance 20013        ",
+                "setroubleshoot 20013        ",
+                "flatpak 20013        ",
+                "pesign 20013        ",
+                "sshd 20013        ",
+                "chrony 20013        ",
+                "tcpdump 20013        ",
+                "grbsec  0 99999 7     "
+            ],
+            "diag": "Check password maximum usage period",
+            "how_action": [
+                "Action will set PASS_MAX_DAYS to 90 and define the maximum usage period. Do you want to proceed?"
+            ],
+            "num": 4,
+            "reason": [
+                "PASS_MAX_DAYS is not set to 90",
+                "Password maximum usage period is not set to less than 90"
+            ],
+            "weak": true,
+            "status": "",
+            "details": []
+        },
+        "5": {
+            "diag": "Check root home and path directory permission settings",
+            "num": 5,
+            "reason": [
+                "The PATH for root does not have a dot (.) at the front or middle"
+            ],
+            "weak": false,
+            "status": "",
+            "details": []
+        },
+        "6": {
+            "diag": "Check for files and directories with no owner or group",
+            "num": 6,
+            "reason": [
+                "Files and directories exist with an assigned user and group"
+            ],
+            "weak": false,
+            "status": "",
+            "details": []
+        },
+        "7": {
+            "diag": "Check /etc/passwd file owner and permission",
+            "how_action": [
+                "Action will change the owner and permissions of the /etc/passwd file. Do you want to proceed?"
+            ],
+            "num": 7,
+            "reason": [
+                "Owner of /etc/passwd file is not root or permissions are set over 644"
+            ],
+            "weak": true,
+            "status": "",
+            "details": []
+        },
+        "8": {
+            "diag": "Check /etc/shadow file owner and permission",
+            "how_action": [
+                "Action will change the owner and permissions of the /etc/shadow file. Do you want to proceed?"
+            ],
+            "num": 8,
+            "reason": [
+                "Owner of /etc/shadow file is not root or permissions are set over 400"
+            ],
+            "weak": true,
+            "status": "",
+            "details": []
+        },
+        "9": {
+            "diag": "Check /etc/hosts file owner and permission",
+            "how_action": [
+                "Action will change the owner and permissions of the /etc/hosts file. Do you want to proceed?"
+            ],
+            "num": 9,
+            "reason": [
+                "Owner of /etc/hosts file is not root or permissions are set over 644"
+            ],
+            "weak": true,
+            "status": "",
+            "details": []
+        },
+        "10": {
+            "diag": "Check SUID and SGID settings",
+            "how_action": [
+                "Action will change the SUID and SGID settings for the main executable file. Do you want to proceed?"
+            ],
+            "num": 10,
+            "reason": [
+                "The main executable file has SUID and SGID permissions set"
+            ],
+            "weak": true,
+            "status": "",
+            "details": []
+        },
+        "11": {
+            "diag": "Check IP and port restrictions",
+            "how_action": [
+                "Action will change the IP and port restrictions for specific hosts to allow access. Do you want to proceed?"
+            ],
+            "num": 11,
+            "reason": [
+                "IP and port restrictions are not set for specific hosts to allow access"
+            ],
+            "weak": true,
+            "status": "",
+            "details": []
+        },
+        "12": {
+            "diag": "Check Anonymous FTP settings",
+            "how_action": [
+                "Action will change the settings to block access to Anonymous FTP. Do you want to proceed?"
+            ],
+            "num": 12,
+            "reason": [
+                "Access to Anonymous FTP is not blocked"
+            ],
+            "weak": true,
+            "status": "",
+            "details": []
+        },
+        "13": {
+            "diag": "Check Sendmail and Postfix versions",
+            "how_action": [
+                "Action will install the latest security patches for Sendmail and Postfix. Do you want to proceed?"
+            ],
+            "num": 13,
+            "reason": [
+                "The versions of Sendmail and Postfix are vulnerable"
+            ],
+            "weak": true,
+            "status": "",
+            "details": []
+        },
+        "14": {
+            "diag": "Check DNS (BIND) security version",
+            "how_action": [
+                "Action will install the latest security patch and stop the DNS daemon if it is not in use. Do you want to proceed?"
+            ],
+            "num": 14,
+            "reason": [
+                "The DNS service is in use, and security patches are not managed periodically"
+            ],
+            "weak": true,
+            "status": "",
+            "details": []
+        },
+        "15": {
+            "diag": "Check DNS Zone Transfer settings",
+            "how_action": [
+                "Action will configure zone transfers for specific servers and domains. Do you want to proceed?"
+            ],
+            "num": 15,
+            "reason": [
+                "The DNS service is in use, and zone transfers are allowed for all users"
+            ],
+            "weak": true,
+            "status": "",
+            "details": []
+        }
+    },
+    "docker": {
+        "1": {
+            "num": 1,
+            "diag": "Apply the latest security patches for Docker",
+            "weak": false,
+            "reason": [
+                "docker is up to date"
+            ],
+            "bypass": null,
+            "status": "",
+            "details": []
+        },
+        "2": {
+            "num": 2,
+            "diag": "Remove unnecessary users from the Docker group",
+            "weak": true,
+            "reason": [
+                "users in docker group: ['grbsec']"
+            ],
+            "how_action": [
+                "Remove user from the docker group"
+            ],
+            "bypass": [
+                "grbsec"
+            ],
+            "status": "Action Completed",
+            "details": [
+                "unnecessary users are removed"
+            ]
+        },
+        "3": {
+            "num": 3,
+            "diag": "Set up Docker daemon auditing",
+            "weak": false,
+            "reason": [
+                "/usr/bin/docker file has audit settings applied."
+            ],
+            "bypass": null,
+            "status": "",
+            "details": []
+        },
+        "4": {
+            "num": 4,
+            "diag": "Audit /var/lib/docker",
+            "weak": true,
+            "reason": [
+                "/usr/bin/docker directory does not have audit settings applied."
+            ],
+            "how_action": [
+                "apply audit setting"
+            ],
+            "bypass": null,
+            "status": "Action Completed",
+            "details": [
+                "The audit setup is complete"
+            ]
+        },
+        "5": {
+            "num": 5,
+            "diag": "Audit /etc/docker",
+            "weak": true,
+            "reason": [
+                "/etc/docker file does not have audit settings applied."
+            ],
+            "how_action": [
+                "apply audit setting"
+            ],
+            "bypass": null,
+            "status": "Action Completed",
+            "details": [
+                "The audit setup is complete"
+            ]
+        },
+        "6": {
+            "num": 6,
+            "diag": "Audit docker.service",
+            "weak": true,
+            "reason": [
+                "/lib/systemd/system/docker.service file does not have audit settings applied."
+            ],
+            "how_action": [
+                "apply audit setting"
+            ],
+            "bypass": null,
+            "status": "Action Completed",
+            "details": [
+                "The audit setup is complete"
+            ]
+        },
+        "7": {
+            "num": 7,
+            "diag": "Audit docker.socket",
+            "weak": true,
+            "reason": [
+                "/lib/systemd/system/docker.socket file does not have audit settings applied."
+            ],
+            "how_action": [
+                "apply audit setting"
+            ],
+            "bypass": null,
+            "status": "Action Completed",
+            "details": [
+                "The audit setup is complete"
+            ]
+        },
+        "8": {
+            "num": 8,
+            "diag": "Audit /etc/default/docker",
+            "weak": true,
+            "reason": [
+                "/etc/default/docker file does not have audit settings applied."
+            ],
+            "how_action": [
+                "apply audit setting"
+            ],
+            "bypass": null,
+            "status": "Action Completed",
+            "details": [
+                "The audit setup is complete"
+            ]
+        },
+        "9": {
+            "num": 9,
+            "diag": "Limit network traffic between containers using default bridge",
+            "weak": true,
+            "reason": [
+                "The default bridge is enabled."
+            ],
+            "how_action": [
+                "Disable default bridge"
+            ],
+            "bypass": null,
+            "status": "Action Completed",
+            "details": [
+                "limit default bridge"
+            ]
+        },
+        "10": {
+            "num": 10,
+            "diag": "Enable Docker client authentication",
+            "weak": true,
+            "reason": [
+                "The Docker authorization plugin is installed."
+            ],
+            "how_action": [
+                "Install docker plugin"
+            ],
+            "bypass": null,
+            "status": "Action Completed",
+            "details": [
+                "enable docker client authentication"
+            ]
+        },
+        "11": {
+            "num": 11,
+            "diag": "Disable legacy registry (v1)",
+            "weak": true,
+            "reason": [
+                "The legacy registry (v1) is enabled."
+            ],
+            "how_action": [
+                "disable the legacy registry (v1)"
+            ],
+            "bypass": null,
+            "status": "Action Completed",
+            "details": [
+                "disable legacy registry"
+            ]
+        },
+        "12": {
+            "num": 12,
+            "diag": "Restrict containers from gaining additional privileges",
+            "weak": true,
+            "reason": [
+                "SecurityOpt is configured."
+            ],
+            "how_action": [
+                "configure SecurityOpt"
+            ],
+            "bypass": [
+                "d29a93a32224",
+                "90253c1efbca",
+                "b6a27da9c0e0",
+                "91c50cada7a6",
+                "f94c8b91cfa5",
+                "9ec6e4e4a047",
+                "1d7b03a492e8",
+                "788c1621cc63",
+                "9af6e5e616ab",
+                "0c702b6b7e34"
+            ],
+            "status": "Action Completed",
+            "details": [
+                "The audit setup is complete"
+            ]
+        },
+        "13": {
+            "num": 13,
+            "diag": "Set ownership for docker.service",
+            "weak": false,
+            "reason": [
+                "The owner and group of the docker.service file are root."
+            ],
+            "bypass": null,
+            "status": "",
+            "details": []
+        },
+        "14": {
+            "num": 14,
+            "diag": "Set access permissions for docker.service file",
+            "weak": false,
+            "reason": [
+                "Proper permissions on docker.service."
+            ],
+            "bypass": "/usr/lib/systemd/system/docker.service",
+            "status": "",
+            "details": []
+        },
+        "15": {
+            "num": 15,
+            "diag": "Set ownership for docker.socket",
+            "weak": false,
+            "reason": [
+                "The owner and group of the docker.socket file are root."
+            ],
+            "bypass": null,
+            "status": "",
+            "details": []
+        },
+        "16": {
+            "num": 16,
+            "diag": "Set access permissions for docker.socket file",
+            "weak": false,
+            "reason": [
+                "Proper permissions on docker.socket."
+            ],
+            "bypass": "/usr/lib/systemd/system/docker.socket",
+            "status": "",
+            "details": []
+        },
+        "17": {
+            "num": 17,
+            "diag": "Set ownership for /etc/docker directory",
+            "weak": false,
+            "reason": [
+                "The owner and group of the /etc/docker directory are root."
+            ],
+            "bypass": null,
+            "status": "",
+            "details": []
+        },
+        "18": {
+            "num": 18,
+            "diag": "Set access permissions for /etc/docker directory",
+            "weak": false,
+            "reason": [
+                "Proper permissions on /etc/docker directory."
+            ],
+            "bypass": null,
+            "status": "",
+            "details": []
+        },
+        "19": {
+            "num": 19,
+            "diag": "Set ownership for /var/run/docker.sock",
+            "weak": false,
+            "reason": [
+                "The owner and group of the /var/run/docker.sock are root."
+            ],
+            "bypass": null,
+            "status": "",
+            "details": []
+        },
+        "20": {
+            "num": 20,
+            "diag": "Set access permissions for /var/run/docker.sock file",
+            "weak": false,
+            "reason": [
+                "Proper permissions on /var/run/docker.sock file."
+            ],
+            "bypass": null,
+            "status": "",
+            "details": []
+        },
+        "21": {
+            "num": 21,
+            "diag": "Set ownership for daemon.json",
+            "weak": null,
+            "reason": [
+                "/var/run/docker.sock dees not exist"
+            ],
+            "how_action": [
+                "Set ownership"
+            ],
+            "bypass": null,
+            "status": "",
+            "details": []
+        },
+        "22": {
+            "num": 22,
+            "diag": "Set access permissions for daemon.json file",
+            "weak": null,
+            "reason": [
+                "/etc/docker/daemon.json deos not exist"
+            ],
+            "how_action": [
+                "Set access permission"
+            ],
+            "bypass": null,
+            "status": "",
+            "details": []
+        },
+        "23": {
+            "num": 23,
+            "diag": "Set ownership for /etc/default/docker",
+            "weak": true,
+            "reason": [
+                "The owner and group of the /etc/default/docker are not root."
+            ],
+            "how_action": [
+                "Set ownership"
+            ],
+            "bypass": null,
+            "status": "Action Completed",
+            "details": [
+                "Assign ownership to /etc/default/docker."
+            ]
+        },
+        "24": {
+            "num": 24,
+            "diag": "Set access permissions for /etc/default/docker file",
+            "weak": null,
+            "reason": [
+                "/etc/default/docker deos not exist"
+            ],
+            "bypass": null,
+            "status": "",
+            "details": []
+        },
+        "25": {
+            "num": 25,
+            "diag": "Run containers as a non-root user",
+            "weak": false,
+            "reason": "There is no container running as the root user.",
+            "bypass": [],
+            "status": "",
+            "details": []
+        },
+        "26": {
+            "num": 26,
+            "diag": "Enable content trust for Docker",
+            "weak": true,
+            "reason": [
+                "Docker content trust is disabled."
+            ],
+            "how_action": [
+                "enable docker content trust"
+            ],
+            "bypass": null,
+            "status": "Action Completed",
+            "details": [
+                "Activate content trust for Docker."
+            ]
+        },
+        "27": {
+            "num": 27,
+            "diag": "Set SELinux security options for containers",
+            "weak": true,
+            "reason": [
+                "SELinux security options are disabled."
+            ],
+            "how_action": [
+                "enable SELinux security options"
+            ],
+            "bypass": null,
+            "status": "Action Completed",
+            "details": [
+                "Configure SELinux security settings for containers."
+            ]
+        },
+        "28": {
+            "num": 28,
+            "diag": "Prohibit SSH usage within containers",
+            "weak": false,
+            "reason": [
+                "SSH is disabled."
+            ],
+            "bypass": null,
+            "status": "",
+            "details": []
+        },
+        "29": {
+            "num": 29,
+            "diag": "Prohibit privileged port mapping for containers",
+            "weak": true,
+            "reason": [
+                "Privileged port matched"
+            ],
+            "how_action": [
+                "disable privileged port."
+            ],
+            "bypass": null,
+            "status": "Action Completed",
+            "details": [
+                "Disallow privileged port mapping for containers."
+            ]
+        },
+        "30": {
+            "num": 30,
+            "diag": "Limit PIDs using cgroup",
+            "weak": true,
+            "reason": [
+                "PIDs cgroup limit not set"
+            ],
+            "how_action": [
+                "Limit PIDs using cgroup."
+            ],
+            "bypass": null,
+            "status": "Action Completed",
+            "details": [
+                "Restrict PIDs with cgroup."
+            ]
+        },
+        "31": {
+            "num": 31,
+            "diag": "Restrict the use of Docker's default bridge docker0",
+            "weak": true,
+            "reason": [
+                "docker0 enabled"
+            ],
+            "how_action": [
+                "disable docker0"
+            ],
+            "bypass": null,
+            "status": "Action Completed",
+            "details": []
+        },
+        "32": {
+            "num": 32,
+            "diag": "Limit sharing of host user namespaces",
+            "weak": false,
+            "reason": [
+                "User namespaces are not shared"
+            ],
+            "bypass": null,
+            "status": "",
+            "details": []
+        }
+    },
+    "oracle": {
+        "1": {
+            "num": 1,
+            "diag": "Change default account and password",
+            "weak": true,
+            "reason": [
+                "Accounts with dbsnmp, outln, mdsys login successful using default ID/PW set"
+            ],
+            "bypass": [
+                {
+                    "weak_ids": [
+                        "dbsnmp",
+                        "outln",
+                        "mdsys"
+                    ]
+                },
+                {
+                    "2": "Alter"
+                },
+                {
+                    "new_passwords": [
+                        "pass1",
+                        "pass2",
+                        "pass3"
+                    ]
+                }
+            ],
+            "how_action": [
+                " Action will drop or alter pw the dbsnmp, outln, mdsys account. You can choose Drop or Alter. Do you want to proceed? "
+            ],
+            "dual_select": [
+                {
+                    "1": "Drop",
+                    "2": "Alter"
+                }
+            ],
+            "dual_second": [
+                "Alter",
+                "new_passwords"
+            ],
+            "status": "Action Completed",
+            "details": [
+                "dbsnmp, outln, mdsys Alter pw done, new id/pw list is {'id': 'dbsnmp', 'pw': 'pass1'}, {'id': 'outln', 'pw': 'pass2'}, {'id': 'mdsys', 'pw': 'pass3'}"
+            ]
+        },
+        "2": {
+            "num": 2,
+            "diag": "Remove unnecessary accounts",
+            "weak": false,
+            "reason": [
+                "no accounts inactive for over 3 days"
+            ],
+            "status": "",
+            "details": []
+        },
+        "3": {
+            "num": 3,
+            "diag": "Align security policies and password policies",
+            "weak": true,
+            "reason": [
+                "Password policy named PASSWORD_REUSE_MAX, PASSWORD_VERIFY_FUNCTION, PASSWORD_REUSE_TIME sets to default."
+            ],
+            "bypass": [
+                {
+                    "weak_resource_names": [
+                        "PASSWORD_REUSE_MAX",
+                        "PASSWORD_VERIFY_FUNCTION",
+                        "PASSWORD_REUSE_TIME"
+                    ]
+                },
+                {
+                    "1": "Set"
+                },
+                {
+                    "new_values": [
+                        "verify_fuction",
+                        "3",
+                        "7"
+                    ]
+                }
+            ],
+            "how_action": [
+                " Action will set the PASSWORD_REUSE_MAX, PASSWORD_VERIFY_FUNCTION, PASSWORD_REUSE_TIME setting. You can enter new values. Do you want to proceed? "
+            ],
+            "dual_select": [
+                {
+                    "1": "Set",
+                    "2": "Temporary"
+                }
+            ],
+            "dual_second": [
+                "Set",
+                "new_values"
+            ],
+            "status": "Action Completed",
+            "details": [
+                "Password policies named PASSWORD_REUSE_MAX, PASSWORD_VERIFY_FUNCTION, PASSWORD_REUSE_TIME have been changed as per your input, {'resrc': 'PASSWORD_REUSE_MAX', 'value': 'verify_fuction'}, {'resrc': 'PASSWORD_VERIFY_FUNCTION', 'value': '3'}, {'resrc': 'PASSWORD_REUSE_TIME', 'value': '7'}"
+            ]
+        },
+        "4": {
+            "num": 4,
+            "diag": "Configure administrator privileges",
+            "weak": true,
+            "reason": [
+                "There are some grantees with admin privileges. "
+            ],
+            "bypass": [
+                {
+                    "weak_gran_priv_list": [
+                        {
+                            "grantee": "OGG_CAPTURE",
+                            "privilege": "DEQUEUE ANY QUEUE"
+                        },
+                        {
+                            "grantee": "OGG_CAPTURE",
+                            "privilege": "CREATE RULE SET"
+                        },
+                        {
+                            "grantee": "OGG_CAPTURE",
+                            "privilege": "CREATE RULE"
+                        },
+                        {
+                            "grantee": "OGG_CAPTURE",
+                            "privilege": "CREATE EVALUATION CONTEXT"
+                        },
+                        {
+                            "grantee": "DV_ACCTMGR",
+                            "privilege": "CREATE SESSION"
+                        },
+                        {
+                            "grantee": "OGG_APPLY",
+                            "privilege": "CREATE RULE"
+                        },
+                        {
+                            "grantee": "OGG_APPLY",
+                            "privilege": "CREATE RULE SET"
+                        },
+                        {
+                            "grantee": "OGG_APPLY",
+                            "privilege": "DEQUEUE ANY QUEUE"
+                        },
+                        {
+                            "grantee": "OGG_APPLY",
+                            "privilege": "CREATE EVALUATION CONTEXT"
+                        },
+                        {
+                            "grantee": "XSTREAM_CAPTURE",
+                            "privilege": "CREATE RULE"
+                        },
+                        {
+                            "grantee": "XSTREAM_CAPTURE",
+                            "privilege": "DEQUEUE ANY QUEUE"
+                        },
+                        {
+                            "grantee": "XSTREAM_CAPTURE",
+                            "privilege": "CREATE EVALUATION CONTEXT"
+                        },
+                        {
+                            "grantee": "XSTREAM_CAPTURE",
+                            "privilege": "CREATE RULE SET"
+                        },
+                        {
+                            "grantee": "GSMADMIN_INTERNAL",
+                            "privilege": "ALTER DATABASE LINK"
+                        },
+                        {
+                            "grantee": "GSMADMIN_INTERNAL",
+                            "privilege": "CREATE SESSION"
+                        },
+                        {
+                            "grantee": "GSMADMIN_INTERNAL",
+                            "privilege": "CREATE DATABASE LINK"
+                        },
+                        {
+                            "grantee": "XSTREAM_APPLY",
+                            "privilege": "CREATE RULE"
+                        },
+                        {
+                            "grantee": "XSTREAM_APPLY",
+                            "privilege": "CREATE RULE SET"
+                        },
+                        {
+                            "grantee": "XSTREAM_APPLY",
+                            "privilege": "CREATE EVALUATION CONTEXT"
+                        },
+                        {
+                            "grantee": "XSTREAM_APPLY",
+                            "privilege": "DEQUEUE ANY QUEUE"
+                        },
+                        {
+                            "grantee": "SYSKM",
+                            "privilege": "ADMINISTER KEY MANAGEMENT"
+                        },
+                        {
+                            "grantee": "GSMUSER_ROLE",
+                            "privilege": "CREATE DATABASE LINK"
+                        }
+                    ]
+                }
+            ],
+            "how_action": [
+                " Action will revoke the admin option weak privileges, grantee set. It is the lists. {'grantee': 'OGG_CAPTURE', 'privilege': 'DEQUEUE ANY QUEUE'}, {'grantee': 'OGG_CAPTURE', 'privilege': 'CREATE RULE SET'}, {'grantee': 'OGG_CAPTURE', 'privilege': 'CREATE RULE'}, {'grantee': 'OGG_CAPTURE', 'privilege': 'CREATE EVALUATION CONTEXT'}, {'grantee': 'DV_ACCTMGR', 'privilege': 'CREATE SESSION'}, {'grantee': 'OGG_APPLY', 'privilege': 'CREATE RULE'}, {'grantee': 'OGG_APPLY', 'privilege': 'CREATE RULE SET'}, {'grantee': 'OGG_APPLY', 'privilege': 'DEQUEUE ANY QUEUE'}, {'grantee': 'OGG_APPLY', 'privilege': 'CREATE EVALUATION CONTEXT'}, {'grantee': 'XSTREAM_CAPTURE', 'privilege': 'CREATE RULE'}, {'grantee': 'XSTREAM_CAPTURE', 'privilege': 'DEQUEUE ANY QUEUE'}, {'grantee': 'XSTREAM_CAPTURE', 'privilege': 'CREATE EVALUATION CONTEXT'}, {'grantee': 'XSTREAM_CAPTURE', 'privilege': 'CREATE RULE SET'}, {'grantee': 'GSMADMIN_INTERNAL', 'privilege': 'ALTER DATABASE LINK'}, {'grantee': 'GSMADMIN_INTERNAL', 'privilege': 'CREATE SESSION'}, {'grantee': 'GSMADMIN_INTERNAL', 'privilege': 'CREATE DATABASE LINK'}, {'grantee': 'XSTREAM_APPLY', 'privilege': 'CREATE RULE'}, {'grantee': 'XSTREAM_APPLY', 'privilege': 'CREATE RULE SET'}, {'grantee': 'XSTREAM_APPLY', 'privilege': 'CREATE EVALUATION CONTEXT'}, {'grantee': 'XSTREAM_APPLY', 'privilege': 'DEQUEUE ANY QUEUE'}, {'grantee': 'SYSKM', 'privilege': 'ADMINISTER KEY MANAGEMENT'}, {'grantee': 'GSMUSER_ROLE', 'privilege': 'CREATE DATABASE LINK'} Do you want to proceed? "
+            ],
+            "status": "Action Completed",
+            "details": [
+                "The previously mentioned admin privileges for grantee and privilege set have been successfully revoked."
+            ]
+        },
+        "5": {
+            "num": 5,
+            "diag": "Restrict remote access to the DB server",
+            "weak": false,
+            "reason": [
+                "The remote_os_authent parameter does not exist, and Oracle no longer permits remote OS authentication starting from version 12c, and this version is higher"
+            ],
+            "status": "",
+            "details": []
+        },
+        "6": {
+            "num": 6,
+            "diag": "Remove user access to system tables",
+            "weak": true,
+            "reason": [
+                "Access to tables restricted to DBA only named SYS, AUDSYS, DVSYS is configured to allow access by general users."
+            ],
+            "bypass": [
+                {
+                    "weak_owner": [
+                        "SYS",
+                        "AUDSYS",
+                        "DVSYS"
+                    ]
+                }
+            ],
+            "how_action": [
+                "Action will configure access to tables restricted to DBA only to prevent access by general users. Do you want to proceed? "
+            ],
+            "status": "Action Completed",
+            "details": [
+                "Access to tables restricted to DBA only named SYS, AUDSYS, DVSYS has been configured to prevent access by general users."
+            ]
+        },
+        "7": {
+            "num": 7,
+            "diag": "Set listener password",
+            "weak": true,
+            "reason": [
+                "As it is a well-known port, Port 1539 for listener file is set to the default configuration."
+            ],
+            "bypass": [
+                {
+                    "weak_port": [
+                        "new_port"
+                    ]
+                },
+                {
+                    "1": "enter"
+                },
+                {
+                    "new_port": [
+                        "8080"
+                    ]
+                }
+            ],
+            "how_action": [
+                "Action will be changed to a new port. Do you want to proceed? "
+            ],
+            "dual_select": [
+                {
+                    "1": "enter",
+                    "2": "Temporary"
+                }
+            ],
+            "dual_second": [
+                "enter",
+                "new_port"
+            ],
+            "status": "Action Completed",
+            "details": [
+                "Configuration of the listener file to use port 8080 has been completed."
+            ]
+        },
+        "8": {
+            "num": 8,
+            "diag": "Restrict SYSDBA login",
+            "weak": true,
+            "reason": [
+                "SYSDBA login restriction is not applied."
+            ],
+            "how_action": [
+                " Action will apply the SYSDBA login restriction. Do you want to proceed? "
+            ],
+            "status": "Action Completed",
+            "details": [
+                "The application of the SYSDBA login restriction has been completed."
+            ],
+            "bypass": []
+        },
+        "9": {
+            "num": 9,
+            "diag": "Configure DBA account roles",
+            "weak": true,
+            "reason": [
+                "The Role of the DBA account named DBMS_LOB, UTL_TCP, UTL_HTTP, UTL_FILE, UTL_INADDR, UTL_SMTP, DBMS_JOB, DBMS_RANDOM set to Public."
+            ],
+            "bypass": [
+                {
+                    "weak_table": [
+                        "DBMS_LOB",
+                        "UTL_TCP",
+                        "UTL_HTTP",
+                        "UTL_FILE",
+                        "UTL_INADDR",
+                        "UTL_SMTP",
+                        "DBMS_JOB",
+                        "DBMS_RANDOM"
+                    ]
+                }
+            ],
+            "how_action": [
+                " Action will restrict the Role setting of the DBA account from Public. Do you want to proceed? "
+            ],
+            "status": "Action Completed",
+            "details": [
+                "Restriction of The Role for DBA account named DBMS_LOB, UTL_TCP, UTL_HTTP, UTL_FILE, UTL_INADDR, UTL_SMTP, DBMS_JOB, DBMS_RANDOM setting from Public has been completed."
+            ]
+        },
+        "10": {
+            "num": 10,
+            "diag": "Set OS_ROLES, REMOTE_OS_ROLES",
+            "weak": false,
+            "reason": [
+                "Permissions granted by an OS group not controlled by database access control are restricted."
+            ],
+            "status": "",
+            "details": []
+        },
+        "11": {
+            "num": 11,
+            "diag": "Apply the latest security patches",
+            "weak": false,
+            "reason": [
+                "The latest security patches have been applied."
+            ],
+            "status": "",
+            "details": []
+        },
+        "12": {
+            "num": 12,
+            "diag": "Enable logging",
+            "weak": true,
+            "reason": [
+                "The audit log storage policy for the DBMS is not applied."
+            ],
+            "how_action": [
+                "Action will apply the audit log storage policy for the DBMS. Do you want to proceed? "
+            ],
+            "status": "Action Completed",
+            "details": [
+                "The application of the audit log storage policy for the DBMS has been completed."
+            ],
+            "bypass": []
+        }
+    },
+    "nodejs": {
+        "1": {
+            "num": 1,
+            "diag": "node 프로세스 권한 점검",
+            "weak": true,
+            "reason": [
+                "Node application is not in production mode"
+            ],
+            "bypass": [
+                {
+                    "weak_status": true
+                }
+            ],
+            "how_action": [
+                "Action will set the node application to production mode. Do you want to proceed?"
+            ],
+            "status": "",
+            "details": []
+        },
+        "2": {
+            "num": 2,
+            "diag": "Node.js 헤더 정보 노출 설정",
+            "weak": true,
+            "reason": [
+                "x-powered-by header is present"
+            ],
+            "bypass": [
+                {}
+            ],
+            "how_action": [
+                "Action will remove the x-powered-by header. Do you want to proceed?"
+            ],
+            "status": "",
+            "details": []
+        },
+        "3": {
+            "num": 3,
+            "diag": "오류 메세지 설정",
+            "weak": true,
+            "reason": [
+                "status code and message found in error page"
+            ],
+            "bypass": [
+                {
+                    "weak_lines": "8:    <title>{{statusCode}} — {{message}}</title>\n28:                      <h1 class=\"error-code\">{{statusCode}}</h1>"
+                }
+            ],
+            "how_action": [
+                "Action will replace error status code and message with unified error message. Do you want to proceed?"
+            ],
+            "status": "",
+            "details": []
+        },
+        "4": {
+            "num": 4,
+            "diag": "로그 디렉터리 및 파일 권한 설정",
+            "weak": true,
+            "reason": [
+                "Log Directory Permissions are weak."
+            ],
+            "bypass": [
+                {
+                    "log_dir": "  /var/lib/ghost/content/logs\n",
+                    "weak_log_dir": true,
+                    "weak_log_files": [
+                        "/var/lib/ghost/content/logs",
+                        "/var/lib/ghost/content/logs/http___localhost_2368_development.error.log",
+                        "/var/lib/ghost/content/logs/http___localhost_2368_development.log"
+                    ]
+                }
+            ],
+            "how_action": [
+                "Action will change the log directory permissions. Do you want to proceed?"
+            ],
+            "status": "",
+            "details": []
+        }
+    },
+    "nginx": {
+        "1": {
+            "num": 1,
+            "diag": "웹 서비스 영역 분리",
+            "weak": true,
+            "reason": [
+                "html dir path is set to default path."
+            ],
+            "bypass": [
+                {}
+            ],
+            "how_action": [
+                "Action will change the html Directory to /var/test/nginx_test. Do you want to proceed?"
+            ],
+            "status": "",
+            "details": []
+        },
+        "2": {
+            "num": 2,
+            "diag": "불필요한 파일 제거",
+            "weak": false,
+            "reason": [
+                "no unnecessary files found"
+            ],
+            "status": "",
+            "details": []
+        },
+        "3": {
+            "num": 3,
+            "diag": "링크 사용 금지",
+            "weak": true,
+            "reason": [
+                "disable_symlink is not set to off."
+            ],
+            "bypass": [
+                {}
+            ],
+            "how_action": [
+                "Action will add \"disable_symlinks off;\" to nginx.conf. Do you want to proceed?"
+            ],
+            "status": "",
+            "details": []
+        },
+        "4": {
+            "num": 4,
+            "diag": "파일 업로드 및 다운로드 제한",
+            "weak": true,
+            "reason": [
+                "client_max_body_size is not set."
+            ],
+            "bypass": [
+                {}
+            ],
+            "how_action": [
+                "Action will add \"client_max_body_size 20M;\" to nginx.conf. Do you want to proceed?"
+            ],
+            "status": "",
+            "details": []
+        },
+        "5": {
+            "num": 5,
+            "diag": "디렉터리 리스팅 제거",
+            "weak": true,
+            "reason": [
+                "No autoindex off setting in default.conf."
+            ],
+            "bypass": [
+                {}
+            ],
+            "how_action": [
+                "Action will add \"autoindex off;\" to default.conf. Do you want to proceed?"
+            ],
+            "status": "",
+            "details": []
+        },
+        "6": {
+            "num": 6,
+            "diag": "웹 프로세스 제한",
+            "weak": false,
+            "reason": [
+                "Web Server Daemon is not running as root."
+            ],
+            "status": "",
+            "details": []
+        },
+        "7": {
+            "num": 7,
+            "diag": "최신 보안 패치 적용",
+            "weak": false,
+            "reason": [
+                "Nginx version is up-to-date | current version : 1.27.2, latest_version : 1.27.2"
+            ],
+            "status": "",
+            "details": []
+        }
+    }
+}

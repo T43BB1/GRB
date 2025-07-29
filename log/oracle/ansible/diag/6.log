@@ -1,0 +1,175 @@
+
+PLAY [checklist 6] *************************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "diag": "Remove user access to system tables"
+}
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "num": 6
+}
+
+TASK [SQL shell] ***************************************************************
+changed: [10.0.2.11]
+
+TASK [SQL shell] ***************************************************************
+changed: [10.0.2.11]
+
+TASK [please check grantees what is prob. weak] ********************************
+ok: [10.0.2.11] => {
+    "msg": [
+        "WEAK_GRANTEE",
+        "--------------------------------------------------------------------------------",
+        "ACCHK_READ",
+        "APPLICATION_TRACE_VIEWER",
+        "AUDIT_ADMIN",
+        "AUDIT_VIEWER",
+        "AVTUNE_PKG_ROLE",
+        "CAPTURE_ADMIN",
+        "CDB_DBA",
+        "DBMS_MDX_INTERNAL",
+        "DB_DEVELOPER_ROLE",
+        "WEAK_GRANTEE",
+        "--------------------------------------------------------------------------------",
+        "DGPDB_ROLE",
+        "DV_ACCTMGR",
+        "DV_ADMIN",
+        "DV_MONITOR",
+        "DV_SECANALYST",
+        "GDS_CATALOG_SELECT",
+        "GSMADMIN_ROLE",
+        "GSMCATUSER_ROLE",
+        "GSMUSER_ROLE",
+        "GSM_POOLADMIN_ROLE",
+        "MAINTPLAN_APP",
+        "WEAK_GRANTEE",
+        "--------------------------------------------------------------------------------",
+        "NOTIFICATIONS_ADMIN",
+        "NOTIFICATIONS_USER",
+        "OGG_APPLY",
+        "OGG_CAPTURE",
+        "OPS$ORACLE",
+        "OPTIMIZER_PROCESSING_RATE",
+        "OSAK_ADMIN_ROLE",
+        "PDB_DBA",
+        "PPLB_ROLE",
+        "SAGA_ADM_ROLE",
+        "WEAK_GRANTEE",
+        "--------------------------------------------------------------------------------",
+        "SYSRAC",
+        "SYSUMF_ROLE",
+        "XS_CACHE_ADMIN",
+        "36 rows selected."
+    ]
+}
+
+TASK [please check owners what is prob. weak] **********************************
+ok: [10.0.2.11] => {
+    "msg": [
+        "WEAK_OWNER",
+        "--------------------------------------------------------------------------------",
+        "SYS",
+        "AUDSYS",
+        "DVSYS"
+    ]
+}
+
+TASK [SQL shell GRANTEE] *******************************************************
+changed: [10.0.2.11]
+
+TASK [SQL shell PRIVILEGE] *****************************************************
+changed: [10.0.2.11]
+
+TASK [SQL shell OWNER] *********************************************************
+changed: [10.0.2.11]
+
+TASK [SQL shell TABLE_NAME] ****************************************************
+changed: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": [
+        "SYS",
+        "AUDSYS",
+        "DVSYS"
+    ]
+}
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "weak": true
+}
+
+TASK [debug] *******************************************************************
+skipping: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+skipping: [10.0.2.11]
+
+TASK [copy] ********************************************************************
+skipping: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": "취약"
+}
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [copy] ********************************************************************
+ok: [10.0.2.11 -> localhost]
+
+TASK [debug] *******************************************************************
+skipping: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+skipping: [10.0.2.11]
+
+TASK [copy] ********************************************************************
+skipping: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "result": {
+        "bypass": [
+            {
+                "weak_owner": [
+                    "SYS",
+                    "AUDSYS",
+                    "DVSYS"
+                ]
+            }
+        ],
+        "diag": "Remove user access to system tables",
+        "how_action": [
+            "Action will configure access to tables restricted to DBA only to prevent access by general users. Do you want to proceed? "
+        ],
+        "num": 6,
+        "reason": [
+            "Access to tables restricted to DBA only named SYS, AUDSYS, DVSYS is configured to allow access by general users."
+        ],
+        "weak": true
+    }
+}
+
+PLAY RECAP *********************************************************************
+10.0.2.11                  : ok=21   changed=6    unreachable=0    failed=0    skipped=6    rescued=0    ignored=0   
+

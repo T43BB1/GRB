@@ -1,0 +1,11 @@
+{
+    "diag": "Check DNS Zone Transfer settings",
+    "how_action": [
+        "Action will configure zone transfers for specific servers and domains. Do you want to proceed?"
+    ],
+    "num": 15,
+    "reason": [
+        "The DNS service is in use, and zone transfers are allowed for all users"
+    ],
+    "weak": true
+}

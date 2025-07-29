@@ -1,0 +1,35 @@
+#Okay
+
+---
+- name: actionlist 2
+  hosts: intranetweb
+  tasks:
+  - set_fact:
+      diag: Node.js 헤더 정보 노출 설정
+      num: 2
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  - name: Add 'app.disable("x-powered-by");' to app.js
+    shell: docker exec -i expressgrb bash -c "sed -i '1i app.disable(\"x-powered-by\");' /var/lib/ghost/current/core/app.js"
+    
+  - name: check the result 
+    shell: docker exec -i expressgrb bash -c "cat current/core/app.js | grep 'x-powered-by'"
+    register: print_result
+
+  - debug:
+      msg: "{{ print_result }}"
+  # action result
+  - debug:
+      msg: 조치완료
+  # 조치 결과 디테일 / status는 점검 완료
+  - set_fact:
+      result: "{{{'num': num, 'diag': diag, 'details': [print_result.stdout], 'status': 'Action Completed'}}}"
+  - copy:
+      content: "{{ result }}"
+      dest: /home/ubuntu/grbprj/log/nodejs/action/2.json
+    delegate_to: localhost
+  - debug:
+      var: result

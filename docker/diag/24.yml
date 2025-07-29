@@ -1,0 +1,77 @@
+- hosts: intranetweb
+  tasks:
+    # header
+    - set_fact:
+        diag: Set access permissions for /etc/default/docker file
+        num: 24
+    - debug:
+        var: diag
+    - debug:
+        var: num
+    
+    # body
+    - shell: "ls -l /etc/default/docker"
+      register: ret
+      ignore_errors: true
+    
+    - set_fact:
+        priv: "{{ret.stdout | regex_search('.{10}')}}"
+    - debug:
+        var: priv
+    
+    # weak?
+    - set_fact:
+        weak: null
+      when: priv == ''
+    
+    - set_fact:
+        weak: "{{(priv | regex_search('...-.--.--')) is none}}"
+      when: priv != ''
+    
+    - debug:
+        var: weak
+    
+    - set_fact:
+        reason: "{{['/etc/default/docker deos not exist']}}"
+      when: weak is none
+    
+    - set_fact:
+        reason: "{{['Improper permissions on /etc/default/docker file.', 'Current: {{priv}} Desired: 644']}}"
+      when: weak is not none and weak
+    
+    - set_fact:
+        reason: "{{['Proper permissions on /etc/default/docker file.']}}"
+      when: weak is not none and not weak
+
+    - set_fact:
+        bypass: null
+    - debug:
+        var: bypass
+
+    # result
+    - block:
+        - debug:
+            msg: 해당없음
+        - copy:
+            content: "{{ {'num':num, 'diag':diag, 'weak':none , 'reason':reason, 'bypass':bypass} | to_json }}"
+            dest: "../../log/docker/diag/{{num}}.json"
+          delegate_to: localhost
+      when: weak is none
+    
+    - block:
+        - debug:
+            msg: 취약
+        - copy:
+            content: "{{ {'num':num, 'diag':diag, 'weak':True , 'reason':reason, 'how_action':['Set access permission'], 'bypass':bypass} | to_json }}"
+            dest: "../../log/docker/diag/{{num}}.json"
+          delegate_to: localhost
+      when: weak is not none and weak
+    
+    - block:
+        - debug:
+            msg: 양호
+        - copy:
+            content: "{{ {'num':num, 'diag':diag, 'weak':False , 'reason':reason, 'bypass':bypass} | to_json }}"
+            dest: "../../log/docker/diag/{{num}}.json"
+          delegate_to: localhost
+      when: weak is not none and not weak

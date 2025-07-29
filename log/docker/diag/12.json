@@ -1,0 +1,1 @@
+{"num": 12, "diag": "Restrict containers from gaining additional privileges", "weak": true, "reason": ["SecurityOpt is configured."], "how_action": ["configure SecurityOpt"], "bypass": ["d29a93a32224", "90253c1efbca", "b6a27da9c0e0", "91c50cada7a6", "f94c8b91cfa5", "9ec6e4e4a047", "1d7b03a492e8", "788c1621cc63", "9af6e5e616ab", "0c702b6b7e34"]}

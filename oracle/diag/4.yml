@@ -1,0 +1,119 @@
+---
+- name: checklist 4
+  hosts: intranetweb
+  
+  tasks:
+  # header
+  - set_fact:
+      diag: Configure administrator privileges
+      num: 4
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  # body
+
+  - name: SQL Shell
+    shell: echo "SELECT USERNAME FROM V\$PWFILE_USERS WHERE USERNAME NOT IN (SELECT GRANTEE FROM DBA_ROLE_PRIVS WHERE GRANTED_ROLE='DBA') AND USERNAME!='INTERNAL' AND sysdba=TRUE;" | docker exec -i oraclegrb sqlplus C##grb/dkagh1
+    register: result1
+  # - name: SQL Shell
+  #   shell: echo "SELECT DISTINCT GRANTEE FROM DBA_SYS_PRIVS WHERE GRANTEE NOT IN ('SYS', 'SYSTEM', 'AQ_ADMINISTRATOR_ROLE', 'DBA', 'MDSYS', 'LBACSYS', 'SCHEDULER_ADMIN', 'WMSHS') AND ADMIN_OPTION = 'YES' AND GRANTEE NOT IN (SELECT GRANTEE FROM DBA_ROLE_PRIVS WHERE GRANTED_ROLE = 'DBA');" | docker exec -i oraclegrb sqlplus C##grb/dkagh1
+  #   register: result2
+  ########이게 원래
+  # - name: SQL Shell
+  #   shell: echo "SELECT DISTINCT GRANTEE, PRIVILEGE FROM DBA_SYS_PRIVS WHERE GRANTEE NOT IN ('SYS', 'SYSTEM', 'AQ_ADMINISTRATOR_ROLE', 'DBA', 'MDSYS', 'LBACSYS', 'SCHEDULER_ADMIN', 'WMSHS') AND ADMIN_OPTION = 'YES' AND GRANTEE NOT IN (SELECT GRANTEE FROM DBA_ROLE_PRIVS WHERE GRANTED_ROLE = 'DBA');" | docker exec -i oraclegrb sqlplus C##grb/dkagh1
+  #   register: result2
+    ##########
+  # - name: 
+  #   debug:
+  #     msg: "{{ result1.stdout_lines | reject('search', 'SQL') | reject('search', 'Version') | reject('search', 'SQL') | reject('search', 'Ora') | reject('search', 'Connect') | reject('search', 'Last') | reject('equalto', '') }}"
+
+  # - name:
+  #   debug:
+  #     msg: "{{ result2.stdout_lines | reject('search', 'SQL') | reject('search', 'Version') | reject('search', 'SQL') | reject('search', 'Ora') | reject('search', 'Connect') | reject('search', 'Last') | reject('equalto', '') }}"
+  # - name: Weak or Healthy 1
+  #   debug:
+  #     msg: >
+  #       {% if 'no rows selected' in result1.stdout %}
+  #         Healthy
+  #       {% else %}
+  #         "Weak! {{ result1.stdout_lines | reject('search', 'SQL') | reject('search', 'Version') | reject('search', 'SQL') | reject('search', 'Ora') | reject('search', 'Connect') | reject('search', 'Last') | reject('equalto', '') }}"
+  #       {% endif %}
+  # - name: Weak or Healthy 2
+  #   debug:
+  #     msg: >
+  #       {% if 'no rows selected' in result2.stdout %}
+  #         Healthy
+  #       {% else %}
+  #         "Weak! {{ result2.stdout_lines | reject('search', 'SQL') | reject('search', 'Version') | reject('search', 'SQL') | reject('search', 'Ora') | reject('search', 'Connect') | reject('search', 'Last') | reject('equalto', '') }}"
+  #       {% endif %}
+  ####
+  #test임 일단 / 아니? 완성임
+  - name: SQL Shell Grantee
+    shell: echo "SELECT GRANTEE FROM DBA_SYS_PRIVS WHERE GRANTEE NOT IN ('SYS', 'SYSTEM', 'AQ_ADMINISTRATOR_ROLE', 'DBA', 'MDSYS', 'LBACSYS', 'SCHEDULER_ADMIN', 'WMSHS') AND ADMIN_OPTION = 'YES' AND GRANTEE NOT IN (SELECT GRANTEE FROM DBA_ROLE_PRIVS WHERE GRANTED_ROLE = 'DBA');" | docker exec -i oraclegrb sqlplus C##grb/dkagh1
+    register: result2
+  - set_fact:
+      weak_grantees: "{{ result2.stdout_lines | reject('search', 'SQL') | reject('search', 'Version') | reject('search', 'Ora') | reject('search', 'Connect') | reject('search', 'Last') | reject('equalto', '') | reject('search', 'GRANTEE') | reject('search', '-') | reject('search', 'selected') | list }}"
+  - debug:
+      msg: "{{ weak_grantees }}"
+
+  - name: SQL Shell Grantee
+    shell: echo "SELECT PRIVILEGE FROM DBA_SYS_PRIVS WHERE GRANTEE NOT IN ('SYS', 'SYSTEM', 'AQ_ADMINISTRATOR_ROLE', 'DBA', 'MDSYS', 'LBACSYS', 'SCHEDULER_ADMIN', 'WMSHS') AND ADMIN_OPTION = 'YES' AND GRANTEE NOT IN (SELECT GRANTEE FROM DBA_ROLE_PRIVS WHERE GRANTED_ROLE = 'DBA');" | docker exec -i oraclegrb sqlplus C##grb/dkagh1
+    register: result3
+  - set_fact:
+      weak_privilege: "{{ result3.stdout_lines | reject('search', 'SQL') | reject('search', 'Version') | reject('search', 'Ora') | reject('search', 'Connect') | reject('search', 'Last') | reject('equalto', '') | reject('search', 'PRIVILEGE') | reject('search', '-') | reject('search', 'selected') | list }}"
+  - debug:
+      msg: "{{ weak_privilege }}"
+
+  - set_fact:
+      weak_gran_priv_list: "{{ weak_gran_priv_list | default([]) + [{'grantee': item.0, 'privilege': item.1}] }}"
+    loop: "{{ weak_grantees | zip(weak_privilege) | list }}"
+  - debug:
+      msg: "{{ weak_gran_priv_list }}"
+  ####
+
+  # weak?
+  - set_fact:
+      weak: "{{ 'no rows selected' not in result1.stdout or 'no rows selected' not in result2.stdout }}"
+  - debug:
+      var: weak
+
+  # result
+ 
+  - block:
+      - debug:
+          msg: 해당없음
+      - set_fact:
+          result: "{{{'num':num, 'diag':diag, 'weak':none, 'reason':['N/A']}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: "../../log/oracle/diag/{{num}}.json"
+        delegate_to: localhost
+    when: weak is none
+
+  - block:
+      - debug:
+          msg: 취약
+      - set_fact:
+          result: "{{{'num':num, 'diag':diag, 'weak':True, 'reason':['There are some grantees with admin privileges. '], 'bypass':[{'weak_gran_priv_list':weak_gran_priv_list}], 'how_action':[' Action will revoke the admin option weak privileges, grantee set. It is the lists. '+weak_gran_priv_list | join(', ')+' Do you want to proceed? ']}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: "../../log/oracle/diag/{{num}}.json"
+        delegate_to: localhost
+    when: weak is not none and weak
+
+  - block:
+      - debug:
+          msg: 양호
+      - set_fact:
+          result: "{{{'num':num, 'diag':diag, 'weak':False, 'reason':['There are no grantees with admin privileges.']}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: "../../log/oracle/diag/{{num}}.json"
+        delegate_to: localhost
+    when: weak is not none and not weak
+  
+ 
+  - debug:
+      var: result

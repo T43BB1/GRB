@@ -1,0 +1,51 @@
+# 패스워드 복잡도 설정_setup
+
+---
+- name: actionlist 2
+  hosts: intranetweb
+  tasks:
+
+  - set_fact:
+      diag: Ensure enforce_for_root setting and Set password complexity setting
+      num: 2
+    
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  - name: Ensure enforce_for_root is set in /etc/pam.d/system-auth
+    lineinfile:
+      path: /etc/pam.d/system-auth
+      state: present
+      regexp: '^.*pam_pwquality.so.*enforce_for_root.*'
+      line: 'password    requisite                                    pam_pwquality.so retry=3 enforce_for_root'
+      backup: yes
+
+  - name: Set password complexity settings in /etc/security/pwquality.conf
+    blockinfile:
+      path: /etc/security/pwquality.conf
+      block: |
+        # Password complexity settings
+        minlen = 8
+        dcredit = -1
+        ucredit = -1
+        lcredit = -1
+        ocredit = -1
+      backup: yes
+
+  # action result
+
+  - debug:
+      msg: 조치완료
+  # 조치 결과 디테일 / status는 점검 완료
+  - set_fact:
+      result: "{{ {'num': num, 'diag': diag, 'details': ['hihi check~ Setting enforce_for_root and password complexity is completed'], 'status': 'Action Completed'} }}"
+  - copy:
+      content: "{{ result }}"
+      dest: /home/ubuntu/grbprj/log/linux/action/2.json
+    delegate_to: localhost
+  - debug:
+      var: result
+
+

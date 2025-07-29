@@ -1,0 +1,11 @@
+{
+    "diag": "Check SUID and SGID settings",
+    "how_action": [
+        "Action will change the SUID and SGID settings for the main executable file. Do you want to proceed?"
+    ],
+    "num": 10,
+    "reason": [
+        "The main executable file has SUID and SGID permissions set"
+    ],
+    "weak": true
+}

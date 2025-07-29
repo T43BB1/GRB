@@ -1,0 +1,34 @@
+- hosts: intranetweb
+  tasks:
+     
+    - set_fact:
+        diag: Apply the latest security patches for Docker
+        num: 1
+    - debug:
+        var: diag
+    - debug:
+        var: num
+
+    - shell: systemctl stop docker
+      ignore_errors: true
+    
+    - shell: yum update -y
+      ignore_errors: true
+    
+    - shell: yum upgrade -y yum-utils \ yum-config-manager --add-repo https://download.docker.com/linux/rhel/docker-ce.repo
+      ignore_errors: true
+    
+    - shell: yum upgrade -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+      ignore_errors: true
+    
+    - shell: systemctl start docker
+      ignore_errors: true
+
+    
+    - block:
+        - set_fact:
+            result: "{{{'num':num, 'diag':diag, 'details':['docker has been updated'], 'status':'Action Completed'}}}"
+        - copy:
+            content: "{{ result }}"
+            dest: "../../log/docker/action/{{num}}.json"
+          delegate_to: localhost

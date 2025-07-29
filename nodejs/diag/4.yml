@@ -1,0 +1,93 @@
+#okay 
+- name: Checklist 4
+  hosts: intranetweb
+  tasks:
+    # header
+    - set_fact:
+        diag: 로그 디렉터리 및 파일 권한 설정
+        num: 4
+    - debug:
+        var: diag
+    - debug:
+        var: num
+
+    # body
+    - name: Check Node.js environment
+      command: docker exec -i expressgrb bash -c "echo $NODE_ENV"
+      register: node_env
+
+    - name: Set log directory path based on environment
+      set_fact:
+        log_dir: >-
+          {% if node_env.stdout.strip() == 'development' %}
+            /var/lib/ghost/content/logs
+          {% elif node_env.stdout.strip() == 'production' %}
+            /var/lib/ghost/current/content/logs
+          {% else %}
+            /unknown/path
+          {% endif %}
+
+    - name: Check permissions of log directory
+      command: docker exec -i expressgrb bash -c "ls -ld {{ log_dir }}"
+      register: log_dir_check
+    - name: Check if log directory is weak
+      set_fact:
+        weak_log_dir: "{{ log_dir_check.stdout.find('root') != -1 or log_dir_check.stdout.split()[0] > '-rwxr-x---' }}"
+
+    - name: Find log files in log directory
+      command: docker exec -i expressgrb bash -c "find {{ log_dir }} type -f"
+      register: log_files
+      changed_when: false
+
+    - name: Check permissions of each log file
+      command: docker exec -i expressgrb bash -c "ls -l {{ item }}"
+      register: log_file_check
+      with_items: "{{ log_files.stdout_lines }}"
+      failed_when: false
+
+    - name: Set fact for weak log files
+      set_fact:
+        weak_log_files: "{{ weak_log_files | default([]) + [item.item] }}"
+      when: item.stdout.find('root') != -1 or item.stdout.split()[0] > '-rw-r-----'
+      with_items: "{{ log_file_check.results }}"
+
+    - name: Check if any log files are weak
+      set_fact:
+        weak: "{{(log_dir_check.stdout.find('root') != -1 or log_dir_check.stdout.split()[0] > '-rwxr-x---') or  (weak_log_files | length > 0)}}"
+
+    # result
+    - block:
+        - debug:
+            msg: 해당없음
+        - set_fact:
+            result: "{{{'num': num, 'diag': diag, 'weak': none, 'reason': ['N/A']} }}"
+        - copy:
+            content: "{{ result }}"
+            dest: /home/ubuntu/grbprj/log/nodejs/diag/4.json
+          delegate_to: localhost
+      when: weak is none
+
+    - block:
+        - debug:
+            msg: 취약
+        - set_fact:
+            result: "{{{'num': num, 'diag': diag, 'weak': True, 'reason': ['Log Directory Permissions are weak.'], 'bypass': [{'log_dir': log_dir, 'weak_log_dir':weak_log_dir ,'weak_log_files' : weak_log_files}], 'how_action': ['Action will change the log directory permissions. Do you want to proceed?']}}}"
+        - copy:
+            content: "{{ result }}"
+            dest: /home/ubuntu/grbprj/log/nodejs/diag/4.json
+          delegate_to: localhost
+      when: weak is not none and weak
+
+    - block:
+        - debug:
+            msg: 양호
+        - set_fact:
+            result: "{{{'num': num, 'diag': diag, 'weak': False, 'reason': ['Node application is not running as root and is in production mode']}}}"
+        - copy:
+            content: "{{ result }}"
+            dest: /home/ubuntu/grbprj/log/nodejs/diag/4.json
+          delegate_to: localhost
+      when: weak is not none and not weak
+
+    - debug:
+        var: result

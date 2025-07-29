@@ -1,0 +1,42 @@
+---
+- name: actionlist 2
+  hosts: intranetweb
+  tasks:
+  # 명령어는 이거임 ansible-playbook actionlists/2.yml -e '{"bypass": [{"weak_ids": ["SYSTEM"], "test": "testyo"}]}'
+  - set_fact:
+      diag: Remove unnecessary accounts
+      num: 2
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  - debug:
+      msg: "{{ bypass }}"
+  - set_fact:
+      weak_ids: "{{ bypass[0].weak_ids }}"
+#   - set_fact:
+#       test: "{{ bypass[0].test }}"
+  - debug:
+      msg: "{{ weak_ids }}"
+
+  
+  # action result
+ 
+  - debug:
+      msg: 조치완료
+  # 조치 결과 디테일 / status는 점검 완료
+  - set_fact:
+      result: "{{{'num':num, 'diag':diag, 'details':[weak_ids | join(', ')+' remove done'], 'status':'Action Completed'}}}"
+  - copy:
+      content: "{{ result }}"
+      dest: "../../log/oracle/action/{{num}}.json"
+    delegate_to: localhost
+  - debug:
+      var: result
+
+  - name: Drop id
+    shell: echo "DROP USER '{{ drop_item }}';" | docker exec -i oraclegrb sqlplus C##grb/dkagh1
+    loop: "{{ drop_ids }}"
+    loop_control:
+      loop_var: drop_item

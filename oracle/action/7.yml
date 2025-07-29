@@ -1,0 +1,60 @@
+---
+- name: checklist 7
+  hosts: intranetweb
+  
+  tasks:
+
+  # header
+  - set_fact:
+      diag: Set listener password
+      num: 7
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  - set_fact:
+      new_port: "{{ bypass[2].new_port }}"
+    when: bypass[2] is defined
+  - debug:
+      msg: "{{ new_port }}"
+    when: bypass[2] is defined
+  
+  # action result
+ 
+  - debug:
+      msg: 조치완료
+  # 조치 결과 디테일 / status는 점검 완료
+  - block:
+      - set_fact:
+          result: "{{{'num':num, 'diag':diag, 'details':['Configuration of the listener file to use port 1521 has been completed.'], 'status':'Action Completed'}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: "../../log/oracle/action/{{num}}.json"
+        delegate_to: localhost
+    when: bypass[2] is not defined
+  - block:
+      - set_fact:
+          result: "{{{'num':num, 'diag':diag, 'details':['Configuration of the listener file to use port '+new_port | join(', ')+' has been completed.'], 'status':'Action Completed'}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: "../../log/oracle/action/{{num}}.json"
+        delegate_to: localhost
+    when: bypass[2] is defined
+  - debug:
+      var: result
+
+
+  - name: Replace port in listener.ora _user input
+    shell: |
+      docker exec -i oraclegrb bash -c "sed -i 's/(PORT = 1539)/(PORT = {{new_port}})/' /opt/oracle/oradata/dbconfig/FREE/listener.ora"
+    become: yes
+    when: bypass[2] is defined
+
+  - name: Replace port in listener.ora _ 1521
+    shell: |
+      docker exec -i oraclegrb bash -c "sed -i 's/(PORT = 1539)/(PORT = 1521)/' /opt/oracle/oradata/dbconfig/FREE/listener.ora"
+    become: yes
+    when: bypass[2] is not defined
+
+# sed -i 's/(PORT = 1521)/(PORT = 1539)/' /opt/oracle/oradata/dbconfig/FREE/listener.ora

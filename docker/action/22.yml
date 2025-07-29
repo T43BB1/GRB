@@ -1,0 +1,20 @@
+- hosts: intranetweb
+  tasks:
+         
+    - set_fact:
+        diag: Set access permissions for daemon.json file
+        num: 22
+    - debug:
+        var: diag
+    - debug:
+        var: num
+    
+    - shell: chmod 644 /etc/docker/daemon.json
+
+    - block:
+        - set_fact:
+            result: "{{{'num':num, 'diag':diag, 'details':['Configure access permissions for the daemon.json file.'], 'status':'Action Completed'}}}"
+        - copy:
+            content: "{{ result }}"
+            dest: "../../log/docker/action/{{num}}.json"
+          delegate_to: localhost

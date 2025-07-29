@@ -1,0 +1,57 @@
+- hosts: intranetweb
+  tasks:
+    # header
+    - set_fact:
+        diag: Enable Docker client authentication
+        num: 10
+    - debug:
+        var: diag
+    - debug:
+        var: num
+    
+    # body
+    - shell: "docker plugin ls"
+      register: ret
+      ignore_errors: true
+    - debug:
+        var: ret
+    
+    # weak?
+    - set_fact:
+        weak: ret.stdout == "ID        NAME      DESCRIPTION   ENABLED"
+    - debug:
+        var: weak
+    
+    - set_fact:
+        reason: "{{['The Docker authorization plugin is not installed.']}}"
+    - debug:
+        var: reason
+    
+    - set_fact:
+        reason: "{{['The Docker authorization plugin is installed.']}}"
+    - debug:
+        var: reason
+
+    - set_fact:
+        bypass: null
+    - debug:
+        var: bypass
+
+    # result
+    - block:
+        - debug:
+            msg: 취약
+        - copy:
+            content: "{{ {'num':num, 'diag':diag, 'weak':True , 'reason':reason, 'how_action':['Install docker plugin'], 'bypass':bypass} | to_json }}"
+            dest: "../../log/docker/diag/{{num}}.json"
+          delegate_to: localhost
+      when: weak
+    
+    - block:
+        - debug:
+            msg: 양호
+        - copy:
+            content: "{{ {'num':num, 'diag':diag, 'weak':False , 'reason':reason, 'bypass':bypass} | to_json }}"
+            dest: "../../log/docker/diag/{{num}}.json"
+          delegate_to: localhost
+      when: not weak

@@ -1,0 +1,1 @@
+{"num": 4, "diag": "Audit /var/lib/docker", "weak": true, "reason": ["/usr/bin/docker directory does not have audit settings applied."], "how_action": ["apply audit setting"], "bypass": null}

@@ -1,0 +1,35 @@
+# Okay 
+---
+- name: actionlist 3
+  hosts: intranetweb
+  tasks:
+  # status_code_lines
+  # 명령어는 이거임 ansible-playbook actionlists/2.yml -e '{'bypass': [{'weak_lines': status_code_lines.stdout}]}'
+  - set_fact:
+      diag: Update error page to show unified error message
+      num: 3
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  - name: Replace string in error.hbs if report is weak
+    command: |
+      docker exec -i expressgrb bash -c "sed -i 's/{% raw %}{{statusCode}}{% endraw %}/Sorry/g' /var/lib/ghost/current/core/server/views/error.hbs && sed -i 's/{% raw %}{{message}}{% endraw %}/Cannot Load Page.../g' /var/lib/ghost/current/core/server/views/error.hbs"
+  
+  - name: Check the result 
+    command: |
+      docker exec -i expressgrb bash -c "grep -n 'Cannot Load Page' /var/lib/ghost/current/core/server/views/error.hbs"
+    register: check_result
+  # action result
+  - debug:
+      msg: 조치완료
+  # 조치 결과 디테일 / status는 점검 완료
+  - set_fact:
+      result: "{{{'num':num, 'diag':diag, 'details':[check_result.stdout], 'status':'Action Completed'}}}"
+  - copy:
+      content: "{{ result }}"
+      dest: /home/ubuntu/grbprj/log/nodejs/action/3.json
+    delegate_to: localhost
+  - debug:
+      var: result

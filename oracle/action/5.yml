@@ -1,0 +1,30 @@
+---
+- name: actionlist 5
+  hosts: intranetweb
+  tasks:
+
+  - set_fact:
+      diag: Restrict remote access to the DB server
+      num: 5
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  # action result
+ 
+  - debug:
+      msg: 조치완료
+  # 조치 결과 디테일 / status는 점검 완료
+  - set_fact:
+      result: "{{{'num':num, 'diag':diag, 'details':['Remote OS authentication restriction has been configured successfully.'], 'status':'Action Completed'}}}"
+  - copy:
+      content: "{{ result }}"
+      dest: "../../log/oracle/action/{{num}}.json"
+    delegate_to: localhost
+  - debug:
+      var: result
+
+
+  - name: Drop id
+    shell: echo "alter system set REMOTE_OS_AUTHENT=FALSE SCOPE=spfile;" | docker exec -i oraclegrb sqlplus C##grb/dkagh1

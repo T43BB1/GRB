@@ -1,0 +1,130 @@
+{
+    "1": {
+        "num": 1,
+        "diag": "Apply the latest security patches for Docker"
+    },
+    "2": {
+        "num": 2,
+        "diag": "Remove unnecessary users from the Docker group"
+    },
+    "3": {
+        "num": 3,
+        "diag": "Set up Docker daemon auditing"
+    },
+    "4": {
+        "num": 4,
+        "diag": "Audit /var/lib/docker"
+    },
+    "5": {
+        "num": 5,
+        "diag": "Audit /etc/docker"
+    },
+    "6": {
+        "num": 6,
+        "diag": "Audit docker.service"
+    },
+    "7": {
+        "num": 7,
+        "diag": "Audit docker.socket"
+    },
+    "8": {
+        "num": 8,
+        "diag": "Audit /etc/default/docker"
+    },
+    "9": {
+        "num": 9,
+        "diag": "Limit network traffic between containers using default bridge"
+    },
+    "10": {
+        "num": 10,
+        "diag": "Enable Docker client authentication"
+    },
+    "11": {
+        "num": 11,
+        "diag": "Disable legacy registry (v1)"
+    },
+    "12": {
+        "num": 12,
+        "diag": "Restrict containers from gaining additional privileges"
+    },
+    "13": {
+        "num": 13,
+        "diag": "Set ownership for docker.service"
+    },
+    "14": {
+        "num": 14,
+        "diag": "Set access permissions for docker.service file"
+    },
+    "15": {
+        "num": 15,
+        "diag": "Set ownership for docker.socket"
+    },
+    "16": {
+        "num": 16,
+        "diag": "Set access permissions for docker.socket file"
+    },
+    "17": {
+        "num": 17,
+        "diag": "Set ownership for /etc/docker directory"
+    },
+    "18": {
+        "num": 18,
+        "diag": "Set access permissions for /etc/docker directory"
+    },
+    "19": {
+        "num": 19,
+        "diag": "Set ownership for /var/run/docker.sock"
+    },
+    "20": {
+        "num": 20,
+        "diag": "Set access permissions for /var/run/docker.sock file"
+    },
+    "21": {
+        "num": 21,
+        "diag": "Set ownership for daemon.json"
+    },
+    "22": {
+        "num": 22,
+        "diag": "Set access permissions for daemon.json file"
+    },
+    "23": {
+        "num": 23,
+        "diag": "Set ownership for /etc/default/docker"
+    },
+    "24": {
+        "num": 24,
+        "diag": "Set access permissions for /etc/default/docker file"
+    },
+    "25": {
+        "num": 25,
+        "diag": "Run containers as a non-root user"
+    },
+    "26": {
+        "num": 26,
+        "diag": "Enable content trust for Docker"
+    },
+    "27": {
+        "num": 27,
+        "diag": "Set SELinux security options for containers"
+    },
+    "28": {
+        "num": 28,
+        "diag": "Prohibit SSH usage within containers"
+    },
+    "29": {
+        "num": 29,
+        "diag": "Prohibit privileged port mapping for containers"
+    },
+    "30": {
+        "num": 30,
+        "diag": "Limit PIDs using cgroup"
+    },
+    "31": {
+        "num": 31,
+        "diag": "Restrict the use of Docker's default bridge docker0"
+    },
+    "32": {
+        "num": 32,
+        "diag": "Limit sharing of host user namespaces"
+    }
+}

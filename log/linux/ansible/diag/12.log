@@ -1,0 +1,81 @@
+
+PLAY [checklist 12] ************************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "diag": "Check Anonymous FTP settings"
+}
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "num": 12
+}
+
+TASK [Check if ftp account exists in /etc/passwd (normal_FTP)] *****************
+changed: [10.0.2.11]
+
+TASK [Check if ProFTP is installed] ********************************************
+fatal: [10.0.2.11]: FAILED! => {"changed": true, "cmd": "which proftpd", "delta": "0:00:00.013429", "end": "2024-10-28 12:34:49.706811", "msg": "non-zero return code", "rc": 1, "start": "2024-10-28 12:34:49.693382", "stderr": "/usr/bin/which: no proftpd in (/home/grbsec/.local/bin:/home/grbsec/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin)", "stderr_lines": ["/usr/bin/which: no proftpd in (/home/grbsec/.local/bin:/home/grbsec/bin:/usr/local/bin:/usr/bin:/usr/local/sbin:/usr/sbin)"], "stdout": "", "stdout_lines": []}
+...ignoring
+
+TASK [Check if /etc/proftpd/proftpd.conf exists] *******************************
+skipping: [10.0.2.11]
+
+TASK [Check for UserAlias setting in /etc/proftpd/proftpd.conf] ****************
+skipping: [10.0.2.11]
+
+TASK [Check if /etc/vsftpd/vsftpd.conf or /etc/vsftpd.conf exists] *************
+ok: [10.0.2.11] => (item=/etc/vsftpd/vsftpd.conf)
+ok: [10.0.2.11] => (item=/etc/vsftpd.conf)
+
+TASK [Check if anonymous_enable is set to NO in vsFTP configuration] ***********
+skipping: [10.0.2.11] => (item=/etc/vsftpd/vsftpd.conf) 
+skipping: [10.0.2.11] => (item=/etc/vsftpd.conf) 
+skipping: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "weak": "   ftp_vuln or proftp_vuln or vsftpd_vuln\n"
+}
+
+TASK [debug] *******************************************************************
+skipping: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+skipping: [10.0.2.11]
+
+TASK [copy] ********************************************************************
+skipping: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": "취약"
+}
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [copy] ********************************************************************
+ok: [10.0.2.11 -> localhost]
+
+TASK [debug] *******************************************************************
+skipping: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+skipping: [10.0.2.11]
+
+TASK [copy] ********************************************************************
+skipping: [10.0.2.11]
+
+PLAY RECAP *********************************************************************
+10.0.2.11                  : ok=12   changed=2    unreachable=0    failed=0    skipped=9    rescued=0    ignored=1   
+

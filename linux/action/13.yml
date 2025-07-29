@@ -1,0 +1,86 @@
+# Sendmail 버전 점검_setup
+
+---
+- name: actionlist 13
+  hosts: intranetweb
+  tasks:
+
+  - set_fact:
+      diag: Check versions and Install security patch of Sendmail, Postfix
+      num: 13
+
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+
+  # Sendmail 프로세스 확인
+  - name: Check if Sendmail is running
+    shell: ps -ef | grep -v grep | grep sendmail
+    register: sendmail_process
+    ignore_errors: yes
+
+  # Sendmail 버전 확인
+  - name: Check Sendmail version if running
+    shell: sendmail -d0.1 < /dev/null | grep -i "Version"
+    when: sendmail_process.stdout != ""
+    register: sendmail_version
+    ignore_errors: yes
+
+  # Sendmail 최신 버전 패치 설치 (예시로 OS 패치 명령어 사용)
+  - name: Install Sendmail security patches
+    yum:
+      name: sendmail
+      state: latest
+    when: sendmail_process.stdout != "" and sendmail_version.stdout != "Version 8.16.1"
+
+  - name: Notify about Sendmail patch update
+    debug:
+      msg: "Sendmail security patch has been installed."
+
+  # Postfix 프로세스 확인
+  - name: Check if Postfix is running
+    shell: systemctl status postfix | grep running
+    register: postfix_process
+    ignore_errors: yes
+
+  # Postfix 버전 확인
+  - name: Check Postfix version if running
+    shell: postconf -d | grep mail_version
+    when: postfix_process.stdout != ""
+    register: postfix_version
+    ignore_errors: yes
+
+  # Postfix 최신 버전 패치 설치
+  - name: Install Postfix security patches
+    yum:
+      name: postfix
+      state: latest
+    when: postfix_process.stdout != "" and postfix_version.stdout != "mail_version = 3.5.9"
+
+  - name: Notify about Postfix patch update
+    debug:
+      msg: "Postfix security patch has been installed."
+
+  # Sendmail, Postfix를 사용하지 않는 경우 처리
+  - name: Report N/A for non-Sendmail/Postfix systems
+    debug:
+      msg: >
+        {% if sendmail_process.stdout == "" and postfix_process.stdout == "" %}
+          N/A: Neither Sendmail nor Postfix is running on this server.
+        {% endif %}
+
+  # action result
+
+  - debug:
+      msg: 조치완료
+  # 조치 결과 디테일 / status는 점검 완료
+  - set_fact:
+      result: "{{ {'num': num, 'diag': diag, 'details': ['hihi check~ Installing the latest version of the security patch is completed'], 'status': 'Action Completed'} }}"
+  - copy:
+      content: "{{ result }}"
+      dest: /home/ubuntu/grbprj/log/linux/action/13.json
+    delegate_to: localhost
+  - debug:
+      var: result

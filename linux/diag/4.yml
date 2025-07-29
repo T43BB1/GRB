@@ -1,0 +1,90 @@
+# 패스워드 최대 사용 기간 설정_check
+---
+- name: checklist 4
+  hosts: intranetweb
+  tasks: 
+    # header
+
+    - set_fact:
+        diag: Check password maximum usage period
+        num: 4
+
+    - debug:
+        var: diag
+    - debug:
+        var: num
+
+    # body
+    - name: Check PASS_MAX_DAYS in /etc/login.defs
+      shell: cat /etc/login.defs | grep PASS_MAX_DAYS
+      register: pass_max_days_login_defs
+      ignore_errors: yes
+
+    - name: Get list of users from /etc/shadow
+      shell: "awk -F: '{print $1,$3,$4,$5,$6,$7,$8,$9,$10,$11}' /etc/shadow"
+      register: user_list
+
+    - name: Check maximum password age for each user
+      shell: chage -l {{ item.split()[0] }}
+      with_items: "{{ user_list.stdout_lines }}"
+      register: user_password_age
+      ignore_errors: yes
+
+    # checking weak
+    - set_fact:
+        weak_pass_max_days: >
+          pass_max_days_login_defs.stdout is search('PASS_MAX_DAYS\\s+90') == False
+
+        weak_user_password: >
+          user_password_age.results 
+          | selectattr('stdout', 'search', '[0-9]+') 
+          | map(attribute='stdout') 
+          | map('split') 
+          | map('last') 
+          | map('int') 
+          | select('>', 90) 
+          | list 
+          | length > 0 
+
+    - set_fact:
+        weak: "{{ weak_pass_max_days or weak_user_password }}"
+    - debug:
+        var: weak
+
+    # result
+    - block:
+        - debug:
+            msg: "해당없음"
+        - set_fact:
+            result: "{{ {'num': num, 'diag': diag, 'weak': none, 'reason': ['N/A']} }}"
+        - copy:
+            content: "{{ result | to_nice_json }}"
+            dest: /home/ubuntu/grbprj/log/linux/diag/4.json
+          delegate_to: localhost
+      when: weak is none
+
+    # Error of password maximum usage period
+    - block:
+        - debug:
+            msg: "취약"
+
+        - set_fact:
+             result: "{{ {'num': num, 'diag': diag, 'weak': True, 'reason': ['PASS_MAX_DAYS is not set to 90', 'Password maximum usage period is not set to less than 90'], 'bypass': user_list.stdout_lines, 'how_action': ['Action will set PASS_MAX_DAYS to 90 and define the maximum usage period. Do you want to proceed?']} }}"
+
+        - copy:
+            content: "{{ result | to_nice_json }}"
+            dest: /home/ubuntu/grbprj/log/linux/diag/4.json
+          delegate_to: localhost
+      when: weak is not none and weak
+
+    - block:
+        - debug:
+            msg: "양호"
+        - set_fact:
+            result: "{{ {'num': num, 'diag': diag, 'weak': False, 'reason': ['PASS_MAX_DAYS and the maximum usage period are set to 90']} }}"
+        - copy:
+            content: "{{ result | to_nice_json }}"
+            dest: /home/ubuntu/grbprj/log/linux/diag/4.json
+          delegate_to: localhost
+      when: weak is not none and not weak
+

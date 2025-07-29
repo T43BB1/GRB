@@ -1,0 +1,68 @@
+- hosts: intranetweb
+  tasks:
+    # header
+    - set_fact:
+        diag: Apply the latest security patches for Docker
+        num: 1
+    - debug:
+        var: diag
+    - debug:
+        var: num
+    
+    # body
+    - shell: docker --version
+      register: ret
+    
+    - set_fact:
+        installed_version: "{{ ret.stdout | regex_search('[0-9]+\\.[0-9]+\\.[0-9]+') }}"
+    - debug:
+        var: installed_version
+    
+    - uri:
+        url: "https://download.docker.com/linux/static/stable/x86_64/"
+        method: GET
+        return_content: yes
+      register: ret
+    
+    - set_fact:
+        latest_version: "{{ (ret.content | regex_findall('docker-[0-9]+\\.[0-9]+\\.[0-9]+\\.tgz')) | map('regex_search', '[0-9]+\\.[0-9]+\\.[0-9]') | max_version }}"
+    - debug:
+        var: latest_version
+    
+    # weak?
+    - set_fact:
+        weak: "{{installed_version != latest_version}}"
+    - debug:
+        var: weak
+
+    - set_fact:
+        reason: "{{['installed_version: {{installed_version}}', 'latest_version: {{latest_version}}']}}"
+      when: weak
+
+    - set_fact:
+        reason: "{{['docker is up to date']}}"
+      when: not weak
+
+    - set_fact:
+        bypass: null
+    - debug:
+        var: bypass
+
+    # result
+    - block:
+        - debug:
+            msg: 취약
+        - copy:
+            content: "{{ {'num':num, 'diag':diag, 'weak':True , 'reason':reason, 'how_action':['update docker'] ,'bypass':bypass} | to_json }}"
+            dest: "../../log/docker/diag/{{num}}.json"
+          delegate_to: localhost
+      when: weak
+    
+    - block:
+        - debug:
+            msg: 양호
+        - copy:
+            content: "{{ {'num':num, 'diag':diag, 'weak':False , 'reason':reason, 'bypass':bypass} | to_json }}"
+            dest: "../../log/docker/diag/{{num}}.json"
+          delegate_to: localhost
+      when: not weak

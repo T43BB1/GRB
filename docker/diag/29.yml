@@ -1,0 +1,72 @@
+- hosts: intranetweb
+  tasks:
+    # header
+    - set_fact:
+        diag: Prohibit privileged port mapping for containers
+        num: 29
+    - debug:
+        var: diag
+    - debug:
+        var: num
+    
+    # body
+    - shell: "docker ps -qa | xargs docker inspect -f '{{'{{.Id}}'}}: {{'{{.NetworkSettings.Ports}}'}}'"
+      register: ret
+    - debug:
+        var: ret
+    
+    - set_fact:
+        ports: "{{ret.stdout_lines | map('regex_search','HostPort:[0-9]+') | list }}"
+    - debug:
+        var: ports
+
+    # weak?
+    - set_fact:
+        weak: "{{(ports | reject('equalto', None) | list) != []}}"
+    - debug:
+        var: weak
+    
+    - set_fact:
+        reason: "{{[]}}"
+      when: weak is none
+    
+    - set_fact:
+        reason: "{{['Privileged port matched']}}"
+      when: weak is not none and weak
+    
+    - set_fact:
+        reason: "{{['Privileged port did not matched']}}"
+      when: weak is not none and not weak
+
+    - set_fact:
+        bypass: null
+    - debug:
+        var: bypass
+
+    # result
+    - block:
+        - debug:
+            msg: 해당없음
+        - copy:
+            content: "{{ {'num':num, 'diag':diag, 'weak':none , 'reason':reason, 'bypass':bypass} | to_json }}"
+            dest: "../../log/docker/diag/{{num}}.json"
+          delegate_to: localhost
+      when: weak is none
+    
+    - block:
+        - debug:
+            msg: 취약
+        - copy:
+            content: "{{ {'num':num, 'diag':diag, 'weak':True , 'reason':reason, 'how_action': ['disable privileged port.'],'bypass':bypass} | to_json }}"
+            dest: "../../log/docker/diag/{{num}}.json"
+          delegate_to: localhost
+      when: weak is not none and weak
+    
+    - block:
+        - debug:
+            msg: 양호
+        - copy:
+            content: "{{ {'num':num, 'diag':diag, 'weak':False , 'reason':reason, 'bypass':bypass} | to_json }}"
+            dest: "../../log/docker/diag/{{num}}.json"
+          delegate_to: localhost
+      when: weak is not none and not weak

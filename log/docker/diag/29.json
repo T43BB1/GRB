@@ -1,0 +1,1 @@
+{"num": 29, "diag": "Prohibit privileged port mapping for containers", "weak": true, "reason": ["Privileged port matched"], "how_action": ["disable privileged port."], "bypass": null}

@@ -1,0 +1,32 @@
+---
+- name: checklist 11
+  hosts: intranetweb
+  
+  tasks:
+
+  # header
+  - set_fact:
+      diag: Apply the latest security patches
+      num: 11
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  # action result
+ 
+  - debug:
+      msg: 조치완료
+  # 조치 결과 디테일 / status는 점검 완료
+  - set_fact:
+      result: "{{{'num':num, 'diag':diag, 'details':['The Docker image of the latest Oracle database version has been pulled to the local environment. Please perform updates, licensing, and other details manually.'], 'status':'Action Completed'}}}"
+  - copy:
+      content: "{{ result }}"
+      dest: "../../log/oracle/action/{{num}}.json"
+    delegate_to: localhost
+  - debug:
+      var: result
+
+  - name: pull container for lastest version
+    shell: "docker pull container-registry.oracle.com/database/enterprise:latest"
+  #미래의 나에게: plusforerror때문이다

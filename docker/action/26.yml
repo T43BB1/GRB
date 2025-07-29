@@ -1,0 +1,35 @@
+- hosts: intranetweb
+  tasks:
+     
+    - set_fact:
+        diag: Enable content trust for Docker
+        num: 26
+    - debug:
+        var: diag
+    - debug:
+        var: num
+
+    - shell: mkdir -p /etc/default
+
+    - lineinfile:
+        regexp: "DOCKER_OPTS"
+        line: 'DOCKER_OPTS="--selinux-enabled"'
+        create: yes
+        insertafter: EOF
+
+    - shell: mkdir -p lib/systemd/system/docker.service
+
+    - lineinfile:
+        line: |
+            EnvironmentFile=/etc/default/docker
+            ExecStart=/usr/bin/dockerd -H fd:// $DOCKER_OPTS
+
+    - shell: service docker.service restart \ service docker.socket restart
+
+    - block:
+        - set_fact:
+            result: "{{{'num':num, 'diag':diag, 'details':['Activate content trust for Docker.'], 'status':'Action Completed'}}}"
+        - copy:
+            content: "{{ result }}"
+            dest: "../../log/docker/action/{{num}}.json"
+          delegate_to: localhost

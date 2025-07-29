@@ -1,0 +1,1 @@
+{"num": 20, "diag": "Set access permissions for /var/run/docker.sock file", "weak": false, "reason": ["Proper permissions on /var/run/docker.sock file."], "bypass": null}

@@ -1,0 +1,25 @@
+
+PLAY [checklist 6] *************************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "diag": "Check for files and directories with no owner or group"
+}
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "num": 6
+}
+
+TASK [Find files and directories with no user or group] ************************
+fatal: [10.0.2.11]: FAILED! => {"changed": true, "cmd": "find /etc /tmp /bin /sbin \\( -nouser -o -nogroup \\) -xdev -exec ls -al {} \\; 2> /dev/null", "delta": "0:00:00.097920", "end": "2024-10-28 12:33:42.941906", "msg": "non-zero return code", "rc": 1, "start": "2024-10-28 12:33:42.843986", "stderr": "", "stderr_lines": [], "stdout": "", "stdout_lines": []}
+
+PLAY RECAP *********************************************************************
+10.0.2.11                  : ok=4    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+

@@ -1,0 +1,95 @@
+---
+- name: checklist 9
+  hosts: intranetweb
+  
+  tasks:
+
+  # header
+  - set_fact:
+      diag: Configure DBA account roles
+      num: 9
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  # body
+
+  - name: role check
+    shell: echo "select granted_role from DBA_ROLE_PRIVS where grantee = 'PUBLIC';" | docker exec -i oraclegrb sqlplus C##grb/dkagh1
+    register: result1
+  - name: public system privilege check
+    shell: echo "select * from DBA_SYS_PRIVS where grantee = 'PUBLIC';" | docker exec -i oraclegrb sqlplus C##grb/dkagh1
+    register: result2
+  - name: public, execute table-name
+    shell: echo "SELECT TABLE_NAME FROM DBA_TAB_PRIVS WHERE GRANTEE = 'PUBLIC' AND PRIVILEGE = 'EXECUTE' AND TABLE_NAME IN ('UTL_SMTP', 'UTL_TCP', 'UTL_HTTP', 'UTL_FILE', 'DBMS_RANDOM', 'DBMS_LOB', 'DBMS_SQL', 'DBMS_JOB', 'DBMS_BACKUP_RESTORE', 'DBMS_OBFUSCATION_TOOLKIT', 'UTL_INADDR');" | docker exec -i oraclegrb sqlplus C##grb/dkagh1
+    register: result3
+  # - name:
+  #   debug:
+  #     msg: >
+  #       {% if 'no rows selected' in result1.stdout %}
+  #         ok, next public sys priv check 
+  #         {% if 'no rows selected' in result2.stdout %}
+  #           ok, next restricted PL/SQL public, execute table_name
+  #           {% if 'no rows selected' in result2.stdout %}  - 이거 오타인듯 다시 ㄱㄱ
+  #             ok all good
+  #           {% else %}
+  #             Weak! {{ result3.stdout_lines }}
+  #           {% endif %}
+  #         {% else %}
+  #           Weak!
+  #         {% endif %}
+  #       {% else %}
+  #         Weak!
+  #       {% endif %}
+  - set_fact:
+      weak_table: []
+  - set_fact:
+      weak_table: "{{ result3.stdout_lines | reject('search', 'SQL') | reject('search', 'select') | reject('search', 'Version') | reject('search', 'SQL') | reject('search', 'Ora') | reject('search', 'Connect') | reject('search', 'Last') | reject('equalto', '') | reject('search', 'TABLE_NAME') | reject('search', '---') | map('regex_replace', '\\t+', ' ') }}"
+  - debug:
+      msg: "{{ weak_table }}"
+
+  # weak?
+  - set_fact:
+      weak: "{{ 'no rows selected' not in result1.stdout or 'no rows selected' not in result2.stdout or 'no rows selected' not in result3.stdout }}"
+  - debug:
+      var: weak
+
+# result
+ 
+  - block:
+      - debug:
+          msg: 해당없음
+      - set_fact:
+          result: "{{{'num':num, 'diag':diag, 'weak':none, 'reason':['N/A']}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: "../../log/oracle/diag/{{num}}.json"
+        delegate_to: localhost
+    when: weak is none
+
+  - block:
+      - debug:
+          msg: 취약
+      - set_fact:
+          result: "{{{'num':num, 'diag':diag, 'weak':True, 'reason':['The Role of the DBA account named '+weak_table | join(', ')+' set to Public.'], 'bypass':[{'weak_table':weak_table}], 'how_action':[' Action will restrict the Role setting of the DBA account from Public. Do you want to proceed? ']}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: "../../log/oracle/diag/{{num}}.json"
+        delegate_to: localhost
+    when: weak is not none and weak
+
+  - block:
+      - debug:
+          msg: 양호
+      - set_fact:
+          result: "{{{'num':num, 'diag':diag, 'weak':False, 'reason':['The Role of the DBA account is not set to Public.']}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: "../../log/oracle/diag/{{num}}.json"
+        delegate_to: localhost
+    when: weak is not none and not weak
+  
+ 
+  - debug:
+      var: result

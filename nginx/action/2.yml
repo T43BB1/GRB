@@ -1,0 +1,36 @@
+---
+- name: actionlist 2
+  hosts: intranetweb
+  tasks:
+  # 명령어는 이거임 ansible-playbook actionlists/2.yml -e '{'bypass': [{'delete_list': delete_list}]}]}'
+  - set_fact:
+      diag: 불필요한 파일 제거
+      num: 2
+  - debug:
+      var: diag
+  - debug:
+      var: num
+  - debug:
+      msg: "{{bypass[0].delete_list}}"
+
+  - name: remove unnecessary files 
+    shell: docker exec -i nginxgrb bash -c "cd /etc/nginx && rm -rf {{ item }}"
+    with_items: "{{ bypass[0].delete_list }}"
+
+  - name: check the result 
+    shell: docker exec -i nginxgrb bash -c "cd /etc/nginx && ls -al"
+    register: check_the_result
+  # action result
+  - set_fact:
+      detail_description: "Unnecessary Files:"
+  - debug:
+      msg: 조치완료
+  # 조치 결과 디테일 / status는 점검 완료
+  - set_fact:
+      result: "{{{'num':num, 'diag':diag, 'details':[detail_description, check_the_result.stdout_lines], 'status':'Action Completed'}}}"
+  - copy:
+      content: "{{ result }}"
+      dest: /home/ubuntu/grbprj/log/nginx/action/2.json
+    delegate_to: localhost
+  - debug:
+      var: result

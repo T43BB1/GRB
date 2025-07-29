@@ -1,0 +1,76 @@
+# DNS 보안 버전 패치_check
+---
+- name: checklist 14
+  hosts: intranetweb
+  tasks:
+# header
+
+  - set_fact:
+      diag: Check DNS (BIND) security version
+      num: 14
+
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  - set_fact:
+      latest_version: "9.18.0"  # 최신 버전 입력
+
+# body
+  - name: Check if DNS service (BIND) is running
+    shell: ps -ef | grep -v grep | grep named
+    register: dns_process
+    ignore_errors: yes
+
+  - name: Check BIND version if running
+    shell: named -v
+    when: dns_process.stdout != ""
+    register: bind_version  
+    ignore_errors: yes
+
+# checking weak
+  - set_fact:
+      weak: >
+        {% if dns_process.stdout != "" and latest_version not in bind_version.stdout %}
+          true
+        {% else %}
+          false
+        {% endif %}
+
+  - debug:
+      var: weak
+
+# result
+  - block:
+      - debug:
+          msg: 해당없음
+      - set_fact:
+          result: "{{ {'num': num, 'diag': diag, 'weak': none, 'reason': ['N/A']} }}"
+      - copy:
+          content: "{{ result | to_nice_json }}"
+          dest: /home/ubuntu/grbprj/log/linux/diag/14.json
+        delegate_to: localhost
+    when: weak is none
+
+  - block:
+      - debug:
+          msg: 취약
+      - set_fact:
+          result: "{{ {'num': num, 'diag': diag, 'weak': true, 'reason': ['The DNS service is in use, and security patches are not managed periodically'], 'how_action': ['Action will install the latest security patch and stop the DNS daemon if it is not in use. Do you want to proceed?']} }}"
+      - copy:
+          content: "{{ result | to_nice_json }}"
+          dest: /home/ubuntu/grbprj/log/linux/diag/14.json
+        delegate_to: localhost
+    when: weak is not none and weak
+
+  - block:
+      - debug:
+          msg: 양호
+      - set_fact:
+          result: "{{ {'num': num, 'diag': diag, 'weak': false, 'reason': ['The DNS service is not in use, or the security patches are managed periodically']} }}"
+      - copy:
+          content: "{{ result | to_nice_json }}"
+          dest: /home/ubuntu/grbprj/log/linux/diag/14.json
+        delegate_to: localhost
+    when: weak is not none and not weak

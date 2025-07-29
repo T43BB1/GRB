@@ -1,0 +1,16 @@
+{
+    "bypass": [
+        {
+            "reason": "Password complexity and enforce_for_root not applied"
+        }
+    ],
+    "diag": "Check password complexity settings",
+    "how_action": [
+        "Action will set enforce_for_root and password complexity. Do you want to proceed?"
+    ],
+    "num": 2,
+    "reason": [
+        "Password complexity and enforce_for_root settings are not applied"
+    ],
+    "weak": true
+}

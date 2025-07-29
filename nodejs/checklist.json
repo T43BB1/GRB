@@ -1,0 +1,18 @@
+{
+    "1": {
+        "num": 1,
+        "diag": "Node process permission check"
+    },
+    "2": {
+        "num": 2,
+        "diag": "Node.js header information exposure settings"
+    },
+    "3": {
+        "num": 3,
+        "diag": "Error message settings"
+    },
+    "4": {
+        "num": 4,
+        "diag": "Log directory and file permission settings"
+    }
+}

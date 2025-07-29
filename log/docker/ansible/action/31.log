@@ -1,0 +1,25 @@
+
+PLAY [intranetweb] *************************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "diag": "Restrict the use of Docker's default bridge docker0"
+}
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "num": 31
+}
+
+TASK [set_fact] ****************************************************************
+fatal: [10.0.2.11]: FAILED! => {"msg": "template error while templating string: expected token ',', got 's'. String: {{{'num':num, 'diag':diag, 'details':['Limit the utilization of Docker's default bridge, docker0.'], 'status':'Action Completed'}}}. expected token ',', got 's'"}
+
+PLAY RECAP *********************************************************************
+10.0.2.11                  : ok=4    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+

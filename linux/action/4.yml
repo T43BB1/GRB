@@ -1,0 +1,52 @@
+# 패스워드 최대 사용 기간 설정_setup
+
+---
+- name: actionlist 4
+  hosts: intranetweb
+  tasks:
+
+  - set_fact:
+      diag: Ensure PASS_MAX_DAYS to 90 and Set maximum password age to 90
+      num: 4
+
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  - name: Read JSON file content
+    slurp:
+      src: /home/ubuntu/grbprj/log/linux/diag/4.json
+    register: json_file
+    delegate_to: localhost
+
+  - name: Decode and parse JSON
+    set_fact:
+      json_data: "{{ json_file.content | b64decode | from_json }}"
+
+  - name: Ensure PASS_MAX_DAYS is set to 90 or less in /etc/login.defs
+    lineinfile:
+      path: /etc/login.defs
+      regexp: '^PASS_MAX_DAYS'
+      line: 'PASS_MAX_DAYS 90'
+      state: present
+      backup: yes
+
+  - name: Set maximum password age to 90 days for each user if it exceeds 90 days
+    command: chage -M 90 {{ item.split()[0] }}  
+    loop: "{{ json_data[0].Bypass[0].weak_ids }}"  
+    when: json_data[0].Bypass[0].why == 'Error of password maximum usage period'
+
+  # action result
+
+  - debug:
+      msg: 조치완료
+  # 조치 결과 디테일 / status는 점검 완료
+  - set_fact:
+      result: "{{ {'num': num, 'diag': diag, 'details': ['hihi check~ Changing PASS_MAX_DAYS to 90 is completed'], 'status': 'Action Completed'} }}"
+  - copy:
+      content: "{{ result }}"
+      dest: /home/ubuntu/grbprj/log/linux/action/4.json
+    delegate_to: localhost
+  - debug:
+      var: result

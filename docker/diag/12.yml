@@ -1,0 +1,68 @@
+- hosts: intranetweb
+  tasks:
+    # header
+    - set_fact:
+        diag: Restrict containers from gaining additional privileges
+        num: 12
+    - debug:
+        var: diag
+    - debug:
+        var: num
+    
+    # body
+    - shell: "docker ps -qa"
+      register: ret
+      ignore_errors: true
+    - debug:
+        var: ret
+    
+    - set_fact:
+        ids: "{{ret.stdout_lines}}"
+    - debug:
+        var: ids
+    
+    - set_fact:
+        weak_ids: []
+
+    - include_tasks: 12.sub
+      loop: "{{ids}}"
+
+    - debug:
+        var: weak_ids
+
+    # weak?
+    - set_fact:
+        weak: weak_ids != []
+    - debug:
+        var: weak
+    
+    - set_fact:
+        reason: "{{['SecurityOpt is not configured.']}}"
+      when: weak
+    
+    - set_fact:
+        reason: "{{['SecurityOpt is configured.']}}"
+
+    - set_fact:
+        bypass: "{{ids}}"
+    - debug:
+        var: bypass
+
+    # result
+    - block:
+        - debug:
+            msg: 취약
+        - copy:
+            content: "{{ {'num':num, 'diag':diag, 'weak':True , 'reason':reason, 'how_action': ['configure SecurityOpt'], 'bypass':bypass} | to_json }}"
+            dest: "../../log/docker/diag/{{num}}.json"
+          delegate_to: localhost
+      when: weak
+    
+    - block:
+        - debug:
+            msg: 양호
+        - copy:
+            content: "{{ {'num':num, 'diag':diag, 'weak':False , 'reason':reason, 'bypass':bypass} | to_json }}"
+            dest: "../../log/docker/diag/{{num}}.json"
+          delegate_to: localhost
+      when: not weak

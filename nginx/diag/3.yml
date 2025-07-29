@@ -1,0 +1,64 @@
+- name: checklist 3
+  hosts: intranetweb
+  
+  tasks:
+  # header
+  - set_fact:
+      diag: 링크 사용 금지
+      num: 3
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  # body
+  - name: Check setting
+    command: docker exec -i nginxgrb bash -c "grep disable_symlinks /etc/nginx/nginx.conf"
+    register: grep_result
+    ignore_errors: yes
+
+  # weak?
+  - set_fact:
+        weak: "{{ grep_result.rc != 0 }}"
+  - debug:
+      var: weak
+
+  # result
+  - block:
+      - debug:
+          msg: 해당없음
+      - set_fact:
+          result: "{{{'num': num, 'diag': diag, 'weak': none, 'reason': ['N/A']}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: /home/ubuntu/grbprj/log/nginx/diag/3.json
+        delegate_to: localhost
+    when: weak is none
+
+  - block:
+      - debug:
+          msg: 취약
+      - set_fact:
+          result: "{{{'num': num, 'diag': diag, 'weak': True, 'reason': ['disable_symlink is not set to off.'], 'bypass': [{}], 'how_action': ['Action will add \"disable_symlinks off;\" to nginx.conf. Do you want to proceed?']} }}"
+      - copy:
+          content: "{{ result }}"
+          dest: /home/ubuntu/grbprj/log/nginx/diag/3.json
+        delegate_to: localhost
+    when: weak is not none and weak
+
+  - block:
+      - debug:
+          msg: 양호
+      - set_fact:
+          result: "{{{'num': num, 'diag': diag, 'weak': False, 'reason': ['disable_symlink is set to off']} }}"
+      - copy:
+          content: "{{ result }}"
+          dest: /home/ubuntu/grbprj/log/nginx/diag/3.json
+        delegate_to: localhost
+    when: weak is not none and not weak
+  
+  - name: Sorting result
+    set_fact:
+      result: "{{ result | sort(attribute='num') }}"
+  - debug:
+      var: result

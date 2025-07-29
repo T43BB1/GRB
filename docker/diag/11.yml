@@ -1,0 +1,58 @@
+- hosts: intranetweb
+  tasks:
+    # header
+    - set_fact:
+        diag: Disable legacy registry (v1)
+        num: 11
+    - debug:
+        var: diag
+    - debug:
+        var: num
+    
+    # body
+    - shell: "ps -ef | head -n -5 | grep docker | grep -e --disable-legacy-registry"
+      register: ret
+      ignore_errors: true
+    - debug:
+        var: ret
+    
+    # weak?
+    - set_fact:
+        weak: ret.stdout == ''
+    - debug:
+        var: weak
+    
+    - set_fact:
+        reason: "{{['The legacy registry (v1) is enabled.']}}"
+      when: weak
+      
+    - set_fact:
+        reason: "{{['The legacy registry (v1) is disabled.']}}"
+      when: not weak
+
+    - debug:
+        var: reason
+
+    - set_fact:
+        bypass: null
+    - debug:
+        var: bypass
+
+    # result
+    - block:
+        - debug:
+            msg: 취약
+        - copy:
+            content: "{{ {'num':num, 'diag':diag, 'weak':True , 'reason':reason, 'how_action':['disable the legacy registry (v1)'], 'bypass':bypass} | to_json }}"
+            dest: "../../log/docker/diag/{{num}}.json"
+          delegate_to: localhost
+      when: weak
+    
+    - block:
+        - debug:
+            msg: 양호
+        - copy:
+            content: "{{ {'num':num, 'diag':diag, 'weak':False , 'reason':reason, 'bypass':bypass} | to_json }}"
+            dest: "../../log/docker/diag/{{num}}.json"
+          delegate_to: localhost
+      when: not weak

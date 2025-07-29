@@ -1,0 +1,102 @@
+# Anonymous FTP 서비스 비활성화_check
+---
+- name: checklist 12
+  hosts: intranetweb
+  tasks:
+    # header
+
+    - set_fact:
+        diag: Check Anonymous FTP settings
+        num: 12
+
+    - debug:
+        var: diag
+    - debug:
+        var: num
+
+    # body
+    - name: Check if ftp account exists in /etc/passwd (normal_FTP)
+      shell: cat /etc/passwd | grep '^ftp'
+      register: ftp_account_check
+      ignore_errors: yes
+
+    - name: Check if ProFTP is installed
+      shell: which proftpd
+      register: proftp_installed
+      ignore_errors: yes
+
+    - name: Check if /etc/proftpd/proftpd.conf exists
+      stat:
+        path: /etc/proftpd/proftpd.conf
+      register: proftp_conf
+      when: proftp_installed.rc == 0
+
+    - name: Check for UserAlias setting in /etc/proftpd/proftpd.conf
+      shell: grep -i 'UserAlias' /etc/proftpd/proftpd.conf
+      register: proftp_useralias_check
+      ignore_errors: yes
+      when: proftp_installed.rc == 0 and proftp_conf is defined and proftp_conf.stat is defined and proftp_conf.stat.exists
+
+    - name: Check if /etc/vsftpd/vsftpd.conf or /etc/vsftpd.conf exists
+      stat:
+        path: "{{ item }}"
+      register: vsftpd_conf_files
+      with_items:
+        - /etc/vsftpd/vsftpd.conf
+        - /etc/vsftpd.conf
+      ignore_errors: yes
+
+    - name: Check if anonymous_enable is set to NO in vsFTP configuration
+      shell: cat {{ item }} | grep 'anonymous_enable=NO'
+      register: vsftpd_anonymous_check
+      with_items:
+        - /etc/vsftpd/vsftpd.conf
+        - /etc/vsftpd.conf
+      when: vsftpd_conf_files.results | selectattr('stat.exists', 'equalto', true) | list | length > 0
+      ignore_errors: yes
+
+    # checking weak
+    - set_fact:
+        weak: >
+          {% set ftp_vuln = (ftp_account_check.stdout is defined and ftp_account_check.stdout != "") %}
+          {% set proftp_vuln = (proftp_installed.rc == 0 and proftp_useralias_check.stdout is defined and proftp_useralias_check.stdout != "") %}
+          {% set vsftpd_vuln = (vsftpd_anonymous_check is defined and vsftpd_anonymous_check.stdout is defined and vsftpd_anonymous_check.stdout == "") %}
+          ftp_vuln or proftp_vuln or vsftpd_vuln
+
+    - debug:
+        var: weak
+
+    # result
+    - block:
+        - debug:
+            msg: "해당없음"
+        - set_fact:
+            result: "{{ {'num': num, 'diag': diag, 'weak': none, 'reason': ['N/A']} }}"
+        - copy:
+            content: "{{ result | to_nice_json }}"
+            dest: /home/ubuntu/grbprj/log/linux/diag/12.json
+          delegate_to: localhost
+      when: weak is none
+
+    - block:
+        - debug:
+            msg: "취약"
+        - set_fact:
+            result: "{{ {'num': num, 'diag': diag, 'weak': true, 'reason': ['Access to Anonymous FTP is not blocked'], 'how_action': ['Action will change the settings to block access to Anonymous FTP. Do you want to proceed?']} }}"
+        - copy:
+            content: "{{ result | to_nice_json }}"
+            dest: /home/ubuntu/grbprj/log/linux/diag/12.json
+          delegate_to: localhost
+      when: weak is not none and weak
+
+    - block:
+        - debug:
+            msg: "양호"
+        - set_fact:
+            result: "{{ {'num': num, 'diag': diag, 'weak': false, 'reason': ['Access to Anonymous FTP is blocked']} }}"
+        - copy:
+            content: "{{ result | to_nice_json }}"
+            dest: /home/ubuntu/grbprj/log/linux/diag/12.json
+          delegate_to: localhost
+      when: weak is not none and not weak
+

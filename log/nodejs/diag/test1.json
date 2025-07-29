@@ -1,0 +1,1 @@
+[{"num": 1, "diag": "node \ud504\ub85c\uc138\uc2a4 \uad8c\ud55c \uc810\uac80", "weak": true, "reason": ["Node application is not in production mode"], "bypass": [{"weak_status": true}], "how_action": ["Action will set the node application to production mode. Do you want to proceed?"]}]

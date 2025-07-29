@@ -1,0 +1,1 @@
+{"num": 1, "diag": "Change default account and password", "details": ["dbsnmp, outln, mdsys Alter pw done, new id/pw list is {'id': 'dbsnmp', 'pw': 'pass1'}, {'id': 'outln', 'pw': 'pass2'}, {'id': 'mdsys', 'pw': 'pass3'}"], "status": "Action Completed"}

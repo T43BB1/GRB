@@ -1,0 +1,1 @@
+[{"num": 2, "diag": "Node.js \ud5e4\ub354 \uc815\ubcf4 \ub178\ucd9c \uc124\uc815", "weak": true, "reason": ["x-powered-by header is present"], "bypass": [{}], "how_action": ["Action will remove the x-powered-by header. Do you want to proceed?"]}]

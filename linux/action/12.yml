@@ -1,0 +1,80 @@
+---
+- name: actionlist 12
+  hosts: intranetweb
+  tasks:
+
+  - set_fact:
+      diag: Remove ftp account, anonymous account and Set anonymous_enable=NO
+      num: 12
+
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  # 일반 FTP 계정 삭제
+  - name: Remove ftp account from /etc/passwd
+    shell: userdel ftp
+    ignore_errors: yes
+    register: remove_ftp_account
+
+  - name: Evaluate ftp account removal
+    debug:
+      msg: >
+        {% if remove_ftp_account.rc == 0 %}
+          ftp account removed successfully.
+        {% else %}
+          No ftp account to remove or removal failed.
+        {% endif %}
+
+  # ProFTP 계정 삭제
+  - name: Remove anonymous account from /etc/passwd
+    shell: userdel anonymous
+    ignore_errors: yes
+    register: remove_anonymous_account
+
+  - name: Evaluate anonymous account removal
+    debug:
+      msg: >
+        {% if remove_anonymous_account.rc == 0 %}
+          anonymous account removed successfully.
+        {% else %}
+          No anonymous account to remove or removal failed.
+        {% endif %}
+
+  # vsFTP 설정 파일 존재 여부 확인
+  - name: Check if /etc/vsftpd.conf exists
+    stat:
+      path: "/etc/vsftpd.conf"
+    register: vsftpd_conf_check
+
+  # vsFTP 설정 파일 수정 (파일이 존재할 때만)
+  - name: Set anonymous_enable=NO in /etc/vsftpd.conf
+    lineinfile:
+      path: "/etc/vsftpd.conf"
+      regexp: '^anonymous_enable'
+      line: 'anonymous_enable=NO'
+      state: present
+    when: vsftpd_conf_check.stat.exists
+    notify: Restart vsftpd
+
+    # vsFTP 서비스 재시작
+  handlers:
+    - name: Restart vsftpd
+      service:
+        name: vsftpd
+        state: restarted
+
+    # action result
+
+    - debug:
+        msg: 조치완료
+    # 조치 결과 디테일 / status는 점검 완료
+    - set_fact:
+        result: "{{ {'num': num, 'diag': diag, 'details': ['hihi check~ Deleting the anonymous FTP account from the /etc/passwd file is completed'], 'status': 'Action Completed'} }}"
+    - copy:
+        content: "{{ result }}"
+        dest: /home/ubuntu/grbprj/log/linux/action/12.json
+      delegate_to: localhost
+    - debug:
+        var: result

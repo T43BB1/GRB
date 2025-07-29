@@ -1,0 +1,58 @@
+- hosts: intranetweb
+  tasks:
+    # header
+    - set_fact:
+        diag: Audit /var/lib/docker
+        num: 4
+    - debug:
+        var: diag
+    - debug:
+        var: num
+    
+    # body
+    - shell: auditctl -l | grep /var/lib/docker
+      register: ret
+      ignore_errors: true
+    - debug:
+        var: ret
+    
+    # weak?
+    - set_fact:
+        weak: ret.stdout == ''
+    - debug:
+        var: weak
+    
+    - set_fact:
+        reason: "{{['/usr/bin/docker directory does not have audit settings applied.']}}"
+      when: weak
+
+    - set_fact:
+        reason: "{{['/usr/bin/docker directory has audit settings applied.']}}"
+      when: not weak
+
+    - debug:
+        var: reason
+
+    - set_fact:
+        bypass: null
+    - debug:
+        var: bypass
+
+    # result
+    - block:
+        - debug:
+            msg: 취약
+        - copy:
+            content: "{{ {'num':num, 'diag':diag, 'weak':True , 'reason':reason, 'how_action': ['apply audit setting'], 'bypass':bypass} | to_json }}"
+            dest: "../../log/docker/diag/{{num}}.json"
+          delegate_to: localhost
+      when: weak
+    
+    - block:
+        - debug:
+            msg: 양호
+        - copy:
+            content: "{{ {'num':num, 'diag':diag, 'weak':False , 'reason':reason, 'bypass':bypass} | to_json }}"
+            dest: "../../log/docker/diag/{{num}}.json"
+          delegate_to: localhost
+      when: not weak

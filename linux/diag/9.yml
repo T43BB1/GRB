@@ -1,0 +1,62 @@
+# /etc/hosts 파일 소유자 및 권한 설정_check
+---
+- name: checklist 9
+  hosts: intranetweb
+  tasks: 
+    # header
+        
+    - set_fact:
+        diag: Check /etc/hosts file owner and permission
+        num: 9
+
+    - debug:
+        var: diag
+    - debug:
+        var: num
+
+    # body
+    - name: Check owner and permissions of /etc/hosts
+      command: ls -l /etc/hosts
+      register: hosts_file_info
+
+    # checking weak
+    - set_fact:
+        weak: not (hosts_file_info.stdout.split()[2] == 'root' and hosts_file_info.stdout.split()[0] == '-rw-r--r--.')
+
+    - debug:
+        var: weak
+
+    # result
+    - block:
+        - debug:
+            msg: 해당없음
+        - set_fact:
+            result: "{{ {'num': num, 'diag': diag, 'weak': none, 'reason': ['N/A']} }}"
+        - copy:
+            content: "{{ result | to_nice_json }}"
+            dest: /home/ubuntu/grbprj/log/linux/diag/9.json
+          delegate_to: localhost
+      when: weak is none
+
+    - block:
+        - debug:
+            msg: 취약
+        - set_fact:
+            result: "{{ {'num': num, 'diag': diag, 'weak': True, 'reason': ['Owner of /etc/hosts file is not root or permissions are set over 644'], 'how_action': ['Action will change the owner and permissions of the /etc/hosts file. Do you want to proceed?']} }}"
+        - copy:
+            content: "{{ result | to_nice_json }}"
+            dest: /home/ubuntu/grbprj/log/linux/diag/9.json
+          delegate_to: localhost
+      when: weak is not none and weak
+
+    - block:
+        - debug:
+            msg: 양호
+        - set_fact:
+            result: "{{ {'num': num, 'diag': diag, 'weak': False, 'reason': ['The owner of the /etc/hosts file is root, and the permission is set to 644 or less']} }}"
+        - copy:
+            content: "{{ result | to_nice_json }}"
+            dest: /home/ubuntu/grbprj/log/linux/diag/9.json
+          delegate_to: localhost
+      when: weak is not none and not weak
+

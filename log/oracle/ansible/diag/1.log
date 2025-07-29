@@ -1,0 +1,507 @@
+
+PLAY [checklist 1] *************************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "diag": "Change default account and password"
+}
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "num": 1
+}
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [include_tasks] ***********************************************************
+included: /home/ubuntu/grbprj/oracle/diag/1_sub.txt for 10.0.2.11 => (item={'id': 'scott', 'pw': 'tiger'})
+included: /home/ubuntu/grbprj/oracle/diag/1_sub.txt for 10.0.2.11 => (item={'id': 'scott', 'pw': 'tigger'})
+included: /home/ubuntu/grbprj/oracle/diag/1_sub.txt for 10.0.2.11 => (item={'id': 'dbsnmp', 'pw': 'dbsnmp'})
+included: /home/ubuntu/grbprj/oracle/diag/1_sub.txt for 10.0.2.11 => (item={'id': 'tracesvr', 'pw': 'trace'})
+included: /home/ubuntu/grbprj/oracle/diag/1_sub.txt for 10.0.2.11 => (item={'id': 'ordplugins', 'pw': 'ordplugins'})
+included: /home/ubuntu/grbprj/oracle/diag/1_sub.txt for 10.0.2.11 => (item={'id': 'ctxsys', 'pw': 'ctxsys'})
+included: /home/ubuntu/grbprj/oracle/diag/1_sub.txt for 10.0.2.11 => (item={'id': 'adams', 'pw': 'wood'})
+included: /home/ubuntu/grbprj/oracle/diag/1_sub.txt for 10.0.2.11 => (item={'id': 'clark', 'pw': 'clth'})
+included: /home/ubuntu/grbprj/oracle/diag/1_sub.txt for 10.0.2.11 => (item={'id': 'lbacsys', 'pw': 'lbacsys'})
+included: /home/ubuntu/grbprj/oracle/diag/1_sub.txt for 10.0.2.11 => (item={'id': 'system', 'pw': 'manager'})
+included: /home/ubuntu/grbprj/oracle/diag/1_sub.txt for 10.0.2.11 => (item={'id': 'sys', 'pw': 'chageon_install'})
+included: /home/ubuntu/grbprj/oracle/diag/1_sub.txt for 10.0.2.11 => (item={'id': 'outln', 'pw': 'outln'})
+included: /home/ubuntu/grbprj/oracle/diag/1_sub.txt for 10.0.2.11 => (item={'id': 'ordsys', 'pw': 'ordsys'})
+included: /home/ubuntu/grbprj/oracle/diag/1_sub.txt for 10.0.2.11 => (item={'id': 'mdsys', 'pw': 'mdsys'})
+included: /home/ubuntu/grbprj/oracle/diag/1_sub.txt for 10.0.2.11 => (item={'id': 'blake', 'pw': 'papr'})
+included: /home/ubuntu/grbprj/oracle/diag/1_sub.txt for 10.0.2.11 => (item={'id': 'jones', 'pw': 'steel'})
+
+TASK [SQL login test] **********************************************************
+changed: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": "\nSQL*Plus: Release 23.0.0.0.0 - for Oracle Cloud and Engineered Systems on Mon Oct 28 03:42:47 2024\nVersion 23.5.0.24.07\n\nCopyright (c) 1982, 2024, Oracle.  All rights reserved.\n\nERROR:\nORA-01017: invalid credential or not authorized; logon denied\nHelp: https://docs.oracle.com/error-help/db/ora-01017/\n\n\nEnter user-name: SP2-0306: Invalid option.\nHelp: https://docs.oracle.com/error-help/db/sp2-0306/\nUsage: CONN[ECT] [{logon|/|proxy} [AS {SYSDBA|SYSOPER|SYSASM|SYSBACKUP|SYSDG|SYSKM|SYSRAC}] [edition=value]]\nwhere <logon> ::= <username>[/<password>][@<connect_identifier>]\n      <proxy> ::= <proxyuser>[<username>][/<password>][@<connect_identifier>]\nEnter user-name: "
+}
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+skipping: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": false
+}
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": " good scott \n"
+}
+
+TASK [SQL login test] **********************************************************
+changed: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": "\nSQL*Plus: Release 23.0.0.0.0 - for Oracle Cloud and Engineered Systems on Mon Oct 28 03:42:50 2024\nVersion 23.5.0.24.07\n\nCopyright (c) 1982, 2024, Oracle.  All rights reserved.\n\nERROR:\nORA-01017: invalid credential or not authorized; logon denied\nHelp: https://docs.oracle.com/error-help/db/ora-01017/\n\n\nEnter user-name: SP2-0306: Invalid option.\nHelp: https://docs.oracle.com/error-help/db/sp2-0306/\nUsage: CONN[ECT] [{logon|/|proxy} [AS {SYSDBA|SYSOPER|SYSASM|SYSBACKUP|SYSDG|SYSKM|SYSRAC}] [edition=value]]\nwhere <logon> ::= <username>[/<password>][@<connect_identifier>]\n      <proxy> ::= <proxyuser>[<username>][/<password>][@<connect_identifier>]\nEnter user-name: "
+}
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+skipping: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": false
+}
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": " good scott \n"
+}
+
+TASK [SQL login test] **********************************************************
+changed: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": "\nSQL*Plus: Release 23.0.0.0.0 - for Oracle Cloud and Engineered Systems on Mon Oct 28 03:42:54 2024\nVersion 23.5.0.24.07\n\nCopyright (c) 1982, 2024, Oracle.  All rights reserved.\n\nERROR:\nORA-28000: The account is locked; login denied.\nHelp: https://docs.oracle.com/error-help/db/ora-28000/\n\n\nEnter user-name: SP2-0306: Invalid option.\nHelp: https://docs.oracle.com/error-help/db/sp2-0306/\nUsage: CONN[ECT] [{logon|/|proxy} [AS {SYSDBA|SYSOPER|SYSASM|SYSBACKUP|SYSDG|SYSKM|SYSRAC}] [edition=value]]\nwhere <logon> ::= <username>[/<password>][@<connect_identifier>]\n      <proxy> ::= <proxyuser>[<username>][/<password>][@<connect_identifier>]\nEnter user-name: "
+}
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": true
+}
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": " weak dbsnmp \n"
+}
+
+TASK [SQL login test] **********************************************************
+changed: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": "\nSQL*Plus: Release 23.0.0.0.0 - for Oracle Cloud and Engineered Systems on Mon Oct 28 03:42:56 2024\nVersion 23.5.0.24.07\n\nCopyright (c) 1982, 2024, Oracle.  All rights reserved.\n\nERROR:\nORA-01017: invalid credential or not authorized; logon denied\nHelp: https://docs.oracle.com/error-help/db/ora-01017/\n\n\nEnter user-name: SP2-0306: Invalid option.\nHelp: https://docs.oracle.com/error-help/db/sp2-0306/\nUsage: CONN[ECT] [{logon|/|proxy} [AS {SYSDBA|SYSOPER|SYSASM|SYSBACKUP|SYSDG|SYSKM|SYSRAC}] [edition=value]]\nwhere <logon> ::= <username>[/<password>][@<connect_identifier>]\n      <proxy> ::= <proxyuser>[<username>][/<password>][@<connect_identifier>]\nEnter user-name: "
+}
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+skipping: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": false
+}
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": " good tracesvr \n"
+}
+
+TASK [SQL login test] **********************************************************
+changed: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": "\nSQL*Plus: Release 23.0.0.0.0 - for Oracle Cloud and Engineered Systems on Mon Oct 28 03:43:00 2024\nVersion 23.5.0.24.07\n\nCopyright (c) 1982, 2024, Oracle.  All rights reserved.\n\nERROR:\nORA-01017: invalid credential or not authorized; logon denied\nHelp: https://docs.oracle.com/error-help/db/ora-01017/\n\n\nEnter user-name: SP2-0306: Invalid option.\nHelp: https://docs.oracle.com/error-help/db/sp2-0306/\nUsage: CONN[ECT] [{logon|/|proxy} [AS {SYSDBA|SYSOPER|SYSASM|SYSBACKUP|SYSDG|SYSKM|SYSRAC}] [edition=value]]\nwhere <logon> ::= <username>[/<password>][@<connect_identifier>]\n      <proxy> ::= <proxyuser>[<username>][/<password>][@<connect_identifier>]\nEnter user-name: "
+}
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+skipping: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": false
+}
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": " good ordplugins \n"
+}
+
+TASK [SQL login test] **********************************************************
+changed: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": "\nSQL*Plus: Release 23.0.0.0.0 - for Oracle Cloud and Engineered Systems on Mon Oct 28 03:43:03 2024\nVersion 23.5.0.24.07\n\nCopyright (c) 1982, 2024, Oracle.  All rights reserved.\n\nERROR:\nORA-40371: Cannot connect as a dictionary protected user.\nHelp: https://docs.oracle.com/error-help/db/ora-40371/\n\n\nEnter user-name: SP2-0306: Invalid option.\nHelp: https://docs.oracle.com/error-help/db/sp2-0306/\nUsage: CONN[ECT] [{logon|/|proxy} [AS {SYSDBA|SYSOPER|SYSASM|SYSBACKUP|SYSDG|SYSKM|SYSRAC}] [edition=value]]\nwhere <logon> ::= <username>[/<password>][@<connect_identifier>]\n      <proxy> ::= <proxyuser>[<username>][/<password>][@<connect_identifier>]\nEnter user-name: "
+}
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+skipping: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": false
+}
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": " good ctxsys \n"
+}
+
+TASK [SQL login test] **********************************************************
+changed: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": "\nSQL*Plus: Release 23.0.0.0.0 - for Oracle Cloud and Engineered Systems on Mon Oct 28 03:43:05 2024\nVersion 23.5.0.24.07\n\nCopyright (c) 1982, 2024, Oracle.  All rights reserved.\n\nERROR:\nORA-01017: invalid credential or not authorized; logon denied\nHelp: https://docs.oracle.com/error-help/db/ora-01017/\n\n\nEnter user-name: SP2-0306: Invalid option.\nHelp: https://docs.oracle.com/error-help/db/sp2-0306/\nUsage: CONN[ECT] [{logon|/|proxy} [AS {SYSDBA|SYSOPER|SYSASM|SYSBACKUP|SYSDG|SYSKM|SYSRAC}] [edition=value]]\nwhere <logon> ::= <username>[/<password>][@<connect_identifier>]\n      <proxy> ::= <proxyuser>[<username>][/<password>][@<connect_identifier>]\nEnter user-name: "
+}
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+skipping: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": false
+}
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": " good adams \n"
+}
+
+TASK [SQL login test] **********************************************************
+changed: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": "\nSQL*Plus: Release 23.0.0.0.0 - for Oracle Cloud and Engineered Systems on Mon Oct 28 03:43:09 2024\nVersion 23.5.0.24.07\n\nCopyright (c) 1982, 2024, Oracle.  All rights reserved.\n\nERROR:\nORA-01017: invalid credential or not authorized; logon denied\nHelp: https://docs.oracle.com/error-help/db/ora-01017/\n\n\nEnter user-name: SP2-0306: Invalid option.\nHelp: https://docs.oracle.com/error-help/db/sp2-0306/\nUsage: CONN[ECT] [{logon|/|proxy} [AS {SYSDBA|SYSOPER|SYSASM|SYSBACKUP|SYSDG|SYSKM|SYSRAC}] [edition=value]]\nwhere <logon> ::= <username>[/<password>][@<connect_identifier>]\n      <proxy> ::= <proxyuser>[<username>][/<password>][@<connect_identifier>]\nEnter user-name: "
+}
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+skipping: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": false
+}
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": " good clark \n"
+}
+
+TASK [SQL login test] **********************************************************
+changed: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": "\nSQL*Plus: Release 23.0.0.0.0 - for Oracle Cloud and Engineered Systems on Mon Oct 28 03:43:13 2024\nVersion 23.5.0.24.07\n\nCopyright (c) 1982, 2024, Oracle.  All rights reserved.\n\nERROR:\nORA-40371: Cannot connect as a dictionary protected user.\nHelp: https://docs.oracle.com/error-help/db/ora-40371/\n\n\nEnter user-name: SP2-0306: Invalid option.\nHelp: https://docs.oracle.com/error-help/db/sp2-0306/\nUsage: CONN[ECT] [{logon|/|proxy} [AS {SYSDBA|SYSOPER|SYSASM|SYSBACKUP|SYSDG|SYSKM|SYSRAC}] [edition=value]]\nwhere <logon> ::= <username>[/<password>][@<connect_identifier>]\n      <proxy> ::= <proxyuser>[<username>][/<password>][@<connect_identifier>]\nEnter user-name: "
+}
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+skipping: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": false
+}
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": " good lbacsys \n"
+}
+
+TASK [SQL login test] **********************************************************
+changed: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": "\nSQL*Plus: Release 23.0.0.0.0 - for Oracle Cloud and Engineered Systems on Mon Oct 28 03:43:15 2024\nVersion 23.5.0.24.07\n\nCopyright (c) 1982, 2024, Oracle.  All rights reserved.\n\nERROR:\nORA-01017: invalid credential or not authorized; logon denied\nHelp: https://docs.oracle.com/error-help/db/ora-01017/\n\n\nEnter user-name: SP2-0306: Invalid option.\nHelp: https://docs.oracle.com/error-help/db/sp2-0306/\nUsage: CONN[ECT] [{logon|/|proxy} [AS {SYSDBA|SYSOPER|SYSASM|SYSBACKUP|SYSDG|SYSKM|SYSRAC}] [edition=value]]\nwhere <logon> ::= <username>[/<password>][@<connect_identifier>]\n      <proxy> ::= <proxyuser>[<username>][/<password>][@<connect_identifier>]\nEnter user-name: "
+}
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+skipping: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": false
+}
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": " good system \n"
+}
+
+TASK [SQL login test] **********************************************************
+changed: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": "\nSQL*Plus: Release 23.0.0.0.0 - for Oracle Cloud and Engineered Systems on Mon Oct 28 03:43:18 2024\nVersion 23.5.0.24.07\n\nCopyright (c) 1982, 2024, Oracle.  All rights reserved.\n\nERROR:\nORA-28009: connection as SYS should be as SYSDBA or SYSOPER\nHelp: https://docs.oracle.com/error-help/db/ora-28009/\n\n\nEnter user-name: SP2-0306: Invalid option.\nHelp: https://docs.oracle.com/error-help/db/sp2-0306/\nUsage: CONN[ECT] [{logon|/|proxy} [AS {SYSDBA|SYSOPER|SYSASM|SYSBACKUP|SYSDG|SYSKM|SYSRAC}] [edition=value]]\nwhere <logon> ::= <username>[/<password>][@<connect_identifier>]\n      <proxy> ::= <proxyuser>[<username>][/<password>][@<connect_identifier>]\nEnter user-name: "
+}
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+skipping: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": false
+}
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": " good sys \n"
+}
+
+TASK [SQL login test] **********************************************************
+changed: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": "\nSQL*Plus: Release 23.0.0.0.0 - for Oracle Cloud and Engineered Systems on Mon Oct 28 03:43:21 2024\nVersion 23.5.0.24.07\n\nCopyright (c) 1982, 2024, Oracle.  All rights reserved.\n\nERROR:\nORA-28000: The account is locked; login denied.\nHelp: https://docs.oracle.com/error-help/db/ora-28000/\n\n\nEnter user-name: SP2-0306: Invalid option.\nHelp: https://docs.oracle.com/error-help/db/sp2-0306/\nUsage: CONN[ECT] [{logon|/|proxy} [AS {SYSDBA|SYSOPER|SYSASM|SYSBACKUP|SYSDG|SYSKM|SYSRAC}] [edition=value]]\nwhere <logon> ::= <username>[/<password>][@<connect_identifier>]\n      <proxy> ::= <proxyuser>[<username>][/<password>][@<connect_identifier>]\nEnter user-name: "
+}
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": true
+}
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": " weak outln \n"
+}
+
+TASK [SQL login test] **********************************************************
+changed: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": "\nSQL*Plus: Release 23.0.0.0.0 - for Oracle Cloud and Engineered Systems on Mon Oct 28 03:43:23 2024\nVersion 23.5.0.24.07\n\nCopyright (c) 1982, 2024, Oracle.  All rights reserved.\n\nERROR:\nORA-01017: invalid credential or not authorized; logon denied\nHelp: https://docs.oracle.com/error-help/db/ora-01017/\n\n\nEnter user-name: SP2-0306: Invalid option.\nHelp: https://docs.oracle.com/error-help/db/sp2-0306/\nUsage: CONN[ECT] [{logon|/|proxy} [AS {SYSDBA|SYSOPER|SYSASM|SYSBACKUP|SYSDG|SYSKM|SYSRAC}] [edition=value]]\nwhere <logon> ::= <username>[/<password>][@<connect_identifier>]\n      <proxy> ::= <proxyuser>[<username>][/<password>][@<connect_identifier>]\nEnter user-name: "
+}
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+skipping: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": false
+}
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": " good ordsys \n"
+}
+
+TASK [SQL login test] **********************************************************
+changed: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": "\nSQL*Plus: Release 23.0.0.0.0 - for Oracle Cloud and Engineered Systems on Mon Oct 28 03:43:27 2024\nVersion 23.5.0.24.07\n\nCopyright (c) 1982, 2024, Oracle.  All rights reserved.\n\nERROR:\nORA-28000: The account is locked; login denied.\nHelp: https://docs.oracle.com/error-help/db/ora-28000/\n\n\nEnter user-name: SP2-0306: Invalid option.\nHelp: https://docs.oracle.com/error-help/db/sp2-0306/\nUsage: CONN[ECT] [{logon|/|proxy} [AS {SYSDBA|SYSOPER|SYSASM|SYSBACKUP|SYSDG|SYSKM|SYSRAC}] [edition=value]]\nwhere <logon> ::= <username>[/<password>][@<connect_identifier>]\n      <proxy> ::= <proxyuser>[<username>][/<password>][@<connect_identifier>]\nEnter user-name: "
+}
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": true
+}
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": " weak mdsys \n"
+}
+
+TASK [SQL login test] **********************************************************
+changed: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": "\nSQL*Plus: Release 23.0.0.0.0 - for Oracle Cloud and Engineered Systems on Mon Oct 28 03:43:29 2024\nVersion 23.5.0.24.07\n\nCopyright (c) 1982, 2024, Oracle.  All rights reserved.\n\nERROR:\nORA-01017: invalid credential or not authorized; logon denied\nHelp: https://docs.oracle.com/error-help/db/ora-01017/\n\n\nEnter user-name: SP2-0306: Invalid option.\nHelp: https://docs.oracle.com/error-help/db/sp2-0306/\nUsage: CONN[ECT] [{logon|/|proxy} [AS {SYSDBA|SYSOPER|SYSASM|SYSBACKUP|SYSDG|SYSKM|SYSRAC}] [edition=value]]\nwhere <logon> ::= <username>[/<password>][@<connect_identifier>]\n      <proxy> ::= <proxyuser>[<username>][/<password>][@<connect_identifier>]\nEnter user-name: "
+}
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+skipping: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": false
+}
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": " good blake \n"
+}
+
+TASK [SQL login test] **********************************************************
+changed: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": "\nSQL*Plus: Release 23.0.0.0.0 - for Oracle Cloud and Engineered Systems on Mon Oct 28 03:43:33 2024\nVersion 23.5.0.24.07\n\nCopyright (c) 1982, 2024, Oracle.  All rights reserved.\n\nERROR:\nORA-01017: invalid credential or not authorized; logon denied\nHelp: https://docs.oracle.com/error-help/db/ora-01017/\n\n\nEnter user-name: SP2-0306: Invalid option.\nHelp: https://docs.oracle.com/error-help/db/sp2-0306/\nUsage: CONN[ECT] [{logon|/|proxy} [AS {SYSDBA|SYSOPER|SYSASM|SYSBACKUP|SYSDG|SYSKM|SYSRAC}] [edition=value]]\nwhere <logon> ::= <username>[/<password>][@<connect_identifier>]\n      <proxy> ::= <proxyuser>[<username>][/<password>][@<connect_identifier>]\nEnter user-name: "
+}
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+skipping: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": false
+}
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": " good jones \n"
+}
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "weak": true
+}
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": [
+        "dbsnmp",
+        "outln",
+        "mdsys"
+    ]
+}
+
+TASK [debug] *******************************************************************
+skipping: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+skipping: [10.0.2.11]
+
+TASK [copy] ********************************************************************
+skipping: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": "취약"
+}
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [copy] ********************************************************************
+ok: [10.0.2.11 -> localhost]
+
+TASK [debug] *******************************************************************
+skipping: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+skipping: [10.0.2.11]
+
+TASK [copy] ********************************************************************
+skipping: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "result": {
+        "bypass": [
+            {
+                "weak_ids": [
+                    "dbsnmp",
+                    "outln",
+                    "mdsys"
+                ]
+            }
+        ],
+        "diag": "Change default account and password",
+        "dual_second": [
+            "Alter",
+            "new_passwords"
+        ],
+        "dual_select": [
+            {
+                "1": "Drop",
+                "2": "Alter"
+            }
+        ],
+        "how_action": [
+            " Action will drop or alter pw the dbsnmp, outln, mdsys account. You can choose Drop or Alter. Do you want to proceed? "
+        ],
+        "num": 1,
+        "reason": [
+            "Accounts with dbsnmp, outln, mdsys login successful using default ID/PW set"
+        ],
+        "weak": true
+    }
+}
+
+PLAY RECAP *********************************************************************
+10.0.2.11                  : ok=111  changed=16   unreachable=0    failed=0    skipped=19   rescued=0    ignored=0   
+

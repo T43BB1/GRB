@@ -1,0 +1,64 @@
+# Okay -> 수정함 
+---
+- name: actionlist 1
+  hosts: intranetweb
+  tasks:
+  # 명령어는 이거임 ansible-playbook actionlists/1.yml -e '{"bypass": [{"weak_status": 'weak2'}]}'
+  - set_fact:
+      diag: node 프로세스 권한 제한
+      num: 1
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  - name: Execute both commands for weak
+    shell: |
+      docker exec -it expressgrb bash -c 
+      'set DEBU=www & npm start dev
+      export NODE_ENV=production'
+    when: bypass[0].weak_status == 'weak'
+    ignore_errors: yes
+
+  - name: Execute command for weak1
+    shell: docker exec -it expressgrb bash -c "set DEBU=www & npm start dev"
+    when: "'weak1' in bypass[0].weak_status or bypass[0].weak_status == 'weak'" 
+    register: check_weak1
+    ignore_errors: yes
+
+  - name: Execute command for weak2
+    shell: docker exec -it expressgrb bash -c 'cd current && export NODE_ENV=production'
+    when: "'weak2' in bypass[0].weak_status or bypass[0].weak_status == 'weak'"
+    register: check_weak2
+    ignore_errors: yes
+  #result
+
+  - name: check the result for weak1
+    shell: docker exec -it expressgrb bash -c "ps -ef | grep node | grep -v grep"
+    register: check_weak1
+    when: (check_weak1 is changed) or ('weak' in bypass[0].weak_status)
+
+  # - debug: 
+  #     msg: "{{ check_weak1.stdout_lines }}"
+
+  - name: check the result for weak2
+    shell: |
+     docker exec -it expressgrb bash -c 'cd current && export NODE_ENV=production && echo $NODE_ENV'
+    register: check_weak2
+    when: check_weak2 is changed or ('weak' in bypass[0].weak_status)
+
+  - debug:
+      msg: "{{ check_weak2 }}"
+  # action result
+
+  - debug:
+      msg: 조치완료
+  # 조치 결과 디테일 / status는 점검 완료
+  - set_fact:
+      result: "{{{'num':num, 'diag':diag, 'details':[check_weak1.stdout_lines,check_weak2.stdout_lines], 'status':'Action Completed'}}}"
+  - copy:
+      content: "{{ result }}"
+      dest: /home/ubuntu/grbprj/log/nodejs/action/1.json
+    delegate_to: localhost
+  - debug:
+      var: result

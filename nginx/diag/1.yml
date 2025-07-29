@@ -1,0 +1,67 @@
+# Nginx 환경 파일 위치 입력받는걸로 고치면 좋음 
+
+- name: checklist 1
+  hosts: intranetweb
+  
+  tasks:
+  # header
+  - set_fact:
+      diag: 웹 서비스 영역 분리
+      num: 1
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  # body1
+  - name: check nginx.conf 
+    shell: docker exec -i nginxgrb bash -c "cat /etc/nginx/conf.d/default.conf | grep root"
+    register: nginx_check
+    ignore_errors: yes
+
+  # weak?
+  - set_fact:
+      weak: "{{ 'root   /usr/share/nginx/html' in nginx_check.stdout }}"
+  - debug:
+      var: weak
+
+  # result
+
+  - block:
+      - debug:
+          msg: 해당없음
+      - set_fact:
+          result: "{{[{'num': num, 'diag': diag, 'weak': none, 'reason': ['N/A']}] }}"
+      - copy:
+          content: "{{ result }}"
+          dest: /home/ubuntu/grbprj/log/nginx/diag/1.json
+        delegate_to: localhost
+    when: weak is none
+
+  - block:
+      - debug:
+          msg: 취약
+      - set_fact:
+          result: "{{{'num': num, 'diag': diag, 'weak': True, 'reason': ['html dir path is set to default path.'], 'bypass': [{}], 'how_action': ['Action will change the html Directory to /var/test/nginx_test. Do you want to proceed?']} }}"
+      - copy:
+          content: "{{ result }}"
+          dest: /home/ubuntu/grbprj/log/nginx/diag/1.json
+        delegate_to: localhost
+    when: weak is not none and weak
+
+  - block:
+      - debug:
+          msg: 양호
+      - set_fact:
+          result: "{{[{'num': num, 'diag': diag, 'weak': False, 'reason': ['html dir path is not set to default path.']}] }}"
+      - copy:
+          content: "{{ result }}"
+          dest: /home/ubuntu/grbprj/log/nginx/diag/1.json
+        delegate_to: localhost
+    when: weak is not none and not weak
+  
+  - name: Sorting result
+    set_fact:
+      result: "{{ result | sort(attribute='num') }}"
+  - debug:
+      var: result

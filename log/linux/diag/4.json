@@ -1,0 +1,45 @@
+{
+    "bypass": [
+        "root  0 99999 7     ",
+        "bin 19820 0 99999 7     ",
+        "daemon 19820 0 99999 7     ",
+        "adm 19820 0 99999 7     ",
+        "lp 19820 0 99999 7     ",
+        "sync 19820 0 99999 7     ",
+        "shutdown 19820 0 99999 7     ",
+        "halt 19820 0 99999 7     ",
+        "mail 19820 0 99999 7     ",
+        "operator 19820 0 99999 7     ",
+        "games 19820 0 99999 7     ",
+        "ftp 19820 0 99999 7     ",
+        "nobody 19820 0 99999 7     ",
+        "systemd-coredump 20013        ",
+        "dbus 20013        ",
+        "sssd 20013        ",
+        "polkitd 20013        ",
+        "rtkit 20013        ",
+        "pipewire 20013        ",
+        "libstoragemgmt 20013        ",
+        "tss 20013        ",
+        "geoclue 20013        ",
+        "cockpit-ws 20013        ",
+        "cockpit-wsinstance 20013        ",
+        "setroubleshoot 20013        ",
+        "flatpak 20013        ",
+        "pesign 20013        ",
+        "sshd 20013        ",
+        "chrony 20013        ",
+        "tcpdump 20013        ",
+        "grbsec  0 99999 7     "
+    ],
+    "diag": "Check password maximum usage period",
+    "how_action": [
+        "Action will set PASS_MAX_DAYS to 90 and define the maximum usage period. Do you want to proceed?"
+    ],
+    "num": 4,
+    "reason": [
+        "PASS_MAX_DAYS is not set to 90",
+        "Password maximum usage period is not set to less than 90"
+    ],
+    "weak": true
+}

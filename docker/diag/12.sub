@@ -1,0 +1,5 @@
+- shell: "docker inspect {{item}} | grep SecurityOpt"
+  register: temp
+- set_fact:
+    weak_ids: "{{weak_ids+[item]}}"
+  when: "{{temp.stdout | regex_search('null') is not none}}"

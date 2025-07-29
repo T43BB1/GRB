@@ -1,0 +1,68 @@
+# Okay
+- name: checklist 2
+  hosts: intranetweb
+  
+  tasks:
+  # header
+  - set_fact:
+      diag: Node.js 헤더 정보 노출 설정
+      num: 2
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  # body1
+  - name: search x-powered-by string
+    shell: docker exec -i expressgrb bash -c "cat current/core/app.js | grep 'x-powered-by'"
+    register: powered_check
+    ignore_errors: yes
+
+  - name: 헤더 정보 노출 설정 확인 결과 
+    debug:
+      msg: "{{ powered_check.stdout }}"
+
+  - name: Check if powered_check is empty
+    set_fact:
+      weak: "{{ powered_check.stdout == '' }}"
+  - debug:
+      var: weak
+
+  # result
+  - block:
+      - debug:
+          msg: 해당없음
+      - set_fact:
+          result: "{{{'num': num, 'diag': diag, 'weak': none, 'reason': ['N/A']}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: /home/ubuntu/grbprj/log/nodejs/diag/2.json
+        delegate_to: localhost
+    when: weak is none
+
+
+# bypass 필요 없음 
+  - block:
+      - debug:
+          msg: 취약
+      - set_fact:
+          result: "{{{'num': num, 'diag': diag, 'weak': True, 'reason': ['x-powered-by header is present'], 'bypass': [{}], 'how_action': ['Action will remove the x-powered-by header. Do you want to proceed?']} }}"
+      - copy:
+          content: "{{ result }}"
+          dest: /home/ubuntu/grbprj/log/nodejs/diag/2.json
+        delegate_to: localhost
+    when: weak is not none and weak
+
+  - block:
+      - debug:
+          msg: 양호
+      - set_fact:
+          result: "{{{'num': num, 'diag': diag, 'weak': False, 'reason': ['x-powered-by header is not present']}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: /home/ubuntu/grbprj/log/nodejs/diag/2.json
+        delegate_to: localhost
+    when: weak is not none and not weak
+ 
+  - debug:
+        msg: "{{result}}"

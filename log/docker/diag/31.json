@@ -1,0 +1,1 @@
+{"num": 31, "diag": "Restrict the use of Docker's default bridge docker0", "weak": true, "reason": ["docker0 enabled"], "how_action": ["disable docker0"], "bypass": null}

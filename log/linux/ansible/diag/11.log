@@ -1,0 +1,28 @@
+
+PLAY [checklist 11] ************************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "diag": "Check IP and port restrictions"
+}
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "num": 11
+}
+
+TASK [Check if /etc/hosts.deny exists] *****************************************
+ok: [10.0.2.11]
+
+TASK [Create /etc/hosts.deny if not exists] ************************************
+fatal: [10.0.2.11]: FAILED! => {"changed": false, "msg": "Error, could not touch target: [Errno 13] Permission denied: b'/etc/hosts.deny'", "path": "/etc/hosts.deny"}
+
+PLAY RECAP *********************************************************************
+10.0.2.11                  : ok=5    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+

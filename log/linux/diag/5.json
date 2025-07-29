@@ -1,0 +1,8 @@
+{
+    "diag": "Check root home and path directory permission settings",
+    "num": 5,
+    "reason": [
+        "The PATH for root does not have a dot (.) at the front or middle"
+    ],
+    "weak": false
+}

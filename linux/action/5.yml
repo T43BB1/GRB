@@ -1,0 +1,99 @@
+# root 홈, 디렉터리 권한 패스 설정_setup
+
+---
+- name: actionlist 5
+  hosts: intranetweb
+  tasks:
+
+  - set_fact:
+      diag: Update PATH (remove '.')
+      num: 5
+    
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  - name: Fix ownership of sudo binary
+    shell: |
+      chown root:root /usr/bin/sudo
+      chmod 4755 /usr/bin/sudo
+    register: chown_chmod_sudo
+    ignore_errors: yes
+
+  - name: Ensure ~/.profile exists for root
+    file:
+      path: /root/.profile
+      state: touch
+    when: ansible_facts['os_family'] == "RedHat"
+    ignore_errors: yes
+
+  - name: Backup ~/.profile for root if exists
+    copy:
+      remote_src: yes  # 원격 호스트에서 파일이 존재하는지 확인
+      src: /root/.profile
+      dest: /root/.profile.bak
+      mode: 0644
+      backup: yes
+    when: ansible_facts['os_family'] == "RedHat"
+    ignore_errors: yes
+
+  - name: Backup /etc/profile if exists
+    copy:
+      remote_src: yes  # 원격 호스트에서 파일이 존재하는지 확인
+      src: /etc/profile
+      dest: /etc/profile.bak
+      mode: 0644
+      backup: yes
+    when: ansible_facts['os_family'] == "RedHat"
+    ignore_errors: yes
+
+  - name: Update PATH in ~/.profile (remove '.' at the beginning or middle)
+    lineinfile:
+      path: /root/.profile
+      regexp: '^PATH=.*'
+      line: 'PATH=$PATH:$HOME/bin'
+      state: present
+      backup: yes
+    when: ansible_facts['os_family'] == "RedHat"
+    ignore_errors: yes
+
+  - name: Update PATH in /etc/profile (remove '.' at the beginning or middle)
+    lineinfile:
+      path: /etc/profile
+      regexp: '^PATH=.*'
+      line: 'PATH=$PATH:$HOME/bin'
+      state: present
+      backup: yes
+    when: ansible_facts['os_family'] == "RedHat"
+    ignore_errors: yes
+
+  - name: Source updated ~/.profile for root if updated
+    shell: |
+      if [ -f /root/.profile ]; then
+        . /root/.profile
+      fi
+    register: source_root_profile
+    ignore_errors: yes
+
+  - name: Source updated /etc/profile if updated
+    shell: |
+      if [ -f /etc/profile ]; then
+        . /etc/profile
+      fi
+    register: source_etc_profile
+    ignore_errors: yes
+
+  # action result
+
+  - debug:
+      msg: 조치완료
+  # 조치 결과 디테일 / status는 점검 완료
+  - set_fact:
+      result: "{{ {'num': num, 'diag': diag, 'details': ['hihi check~ Deleting the . from PATH at the front or middle is completed'], 'status': 'Action Completed'} }}"
+  - copy:
+      content: "{{ result }}"
+      dest: /home/ubuntu/grbprj/log/linux/action/5.json
+    delegate_to: localhost
+  - debug:
+      var: result

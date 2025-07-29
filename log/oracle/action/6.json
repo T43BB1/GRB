@@ -1,0 +1,1 @@
+{"num": 6, "diag": "Remove user access to system tables", "details": ["Access to tables restricted to DBA only named SYS, AUDSYS, DVSYS has been configured to prevent access by general users."], "status": "Action Completed"}

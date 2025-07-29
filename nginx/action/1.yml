@@ -1,0 +1,42 @@
+---
+- name: actionlist 1
+  hosts: intranetweb
+  tasks:
+  # 명령어는 이거임 ansible-playbook actionlists/2.yml -e '{"bypass": [{"weak_ids": ["SYSTEM"], "test": "testyo"}]}'
+  - set_fact:
+      diag: 웹 서비스 영역 분리
+      num: 1
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+# 필요없나? 필요없으면 지워도됨 
+  - name: Ensure /var/test/nginx_test directory exists
+    shell: docker exec -i nginxgrb bash -c "mkdir -p /var/test/nginx_test"
+
+  - name: Move files from /usr/share/nginx to /var/test/nginx_test
+    shell: docker exec -i nginxgrb bash -c "mv /usr/share/nginx/* /var/test/nginx_test/"
+
+  - name: Change root documentRoot
+    shell: docker exec -i nginxgrb bash -c "sed -i 's|root   /usr/share/nginx|root   /var/test/nginx_test|g' /etc/nginx/conf.d/default.conf"
+
+#여기까지 
+  - name: check the result
+    shell: docker exec -i nginxgrb bash -c "cat /etc/nginx/conf.d/default.conf"
+    register: check_the_result
+
+  # action result
+  - set_fact:
+      detail_description: "Edited Result :"
+  - debug:
+      msg: 조치완료
+  # 조치 결과 디테일 / status는 점검 완료
+  - set_fact:
+      result: "{{{'num':num, 'diag':diag, 'details':[detail_description, check_the_result.stdout_lines], 'status':'Action Completed'}}}"
+  - copy:
+      content: "{{ result }}"
+      dest: /home/ubuntu/grbprj/log/nginx/action/1.json
+    delegate_to: localhost
+  - debug:
+      var: result

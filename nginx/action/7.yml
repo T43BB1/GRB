@@ -1,0 +1,38 @@
+---
+- name: actionlist 7
+  hosts: intranetweb
+  tasks:
+  #  result: "{{ result + [{'num': num, 'diag': diag, 'weak': True, 'reason': ['Nginx version is outdated'], 'bypass': [{'latest_version': latest_version.stdout}], 'how_action': ['Action will update Nginx to the latest version. Do you want to proceed?']}] }}"
+  - set_fact:
+      diag: Set Web Process Limit
+      num: 7
+  - debug:
+      var: diag
+  - debug:
+      var: num 
+
+  - debug:
+      msg: "{{ bypass[0].latest_version }}"
+  - name: Update Nginx to the latest version
+    shell: |
+      docker exec -i nginxgrb bash -c "apt-get update && apt-get install -y nginx = {{ latest_version.stdout }}"
+    ignore_errors: yes
+
+  - name: check the result 
+    shell: |
+      docker exec -i nginxgrb bash -c "nginx -v"
+    register: check_result
+
+  # action result
+  - set_fact:
+      detail_description: "Nginx Update Success."
+      msg: 조치완료
+  # 조치 결과 디테일 / status는 점검 완료
+  - set_fact:
+      result: "{{{'num':num, 'diag':diag, 'details':[detail_description, check_result.stderr ], 'status':'Action Completed'}}}"
+  - copy:
+      content: "{{ result }}"
+      dest: /home/ubuntu/grbprj/log/nginx/action/7.json
+    delegate_to: localhost
+  - debug:
+      var: result

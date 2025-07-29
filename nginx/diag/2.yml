@@ -1,0 +1,73 @@
+#Okay
+- name: checklist 2
+  hosts: intranetweb
+  
+  tasks:
+  # header
+  - set_fact:
+      diag: 불필요한 파일 제거
+      num: 2
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  # body
+  - name: list files in /etc/nginx
+    shell: docker exec -i nginxgrb bash -c "cd /etc/nginx && ls -al"
+    register: nginx_files
+    ignore_errors: yes
+
+  - name: set delete list and report variable
+    set_fact:
+      delete_list: "{{ nginx_files.stdout_lines | select('search', '\\.old|\\.bak') | list + nginx_files.stdout_lines | select('search', 'test') | list }}"
+
+  - name: extract filenames from delete_list
+    set_fact:
+      delete_list: "{{ delete_list | map('regex_replace', '^.*\\s', '') | list }}"
+
+  # weak?
+  - set_fact:
+      weak: "{{ delete_list | length > 0 }}"
+  - debug:
+      var: weak
+
+  # result
+  - block:
+      - debug:
+          msg: 해당없음
+      - set_fact:
+          result: "{{{'num': num, 'diag': diag, 'weak': none, 'reason': ['N/A']} }}"
+      - copy:
+          content: "{{ result }}"
+          dest: /home/ubuntu/grbprj/log/nginx/diag/2.json
+        delegate_to: localhost
+    when: weak is none
+
+  - block:
+      - debug:
+          msg: 취약
+      - set_fact:
+          result: "{{{'num': num, 'diag': diag, 'weak': True, 'reason': ['unnecessary files found'], 'bypass': [{'delete_list': delete_list}], 'how_action': ['Action will remove ' + (delete_list | join(', ')) + '. Do you want to proceed?']} }}"
+      - copy:
+          content: "{{ result }}"
+          dest: /home/ubuntu/grbprj/log/nginx/diag/2.json
+        delegate_to: localhost
+    when: weak is not none and weak
+
+  - block:
+      - debug:
+          msg: 양호
+      - set_fact:
+          result: "{{{'num': num, 'diag': diag, 'weak': False, 'reason': ['no unnecessary files found']} }}"
+      - copy:
+          content: "{{ result }}"
+          dest: /home/ubuntu/grbprj/log/nginx/diag/2.json
+        delegate_to: localhost
+    when: weak is not none and not weak
+  
+  - name: Sorting result
+    set_fact:
+      result: "{{ result | sort(attribute='num') }}"
+  - debug:
+      var: result

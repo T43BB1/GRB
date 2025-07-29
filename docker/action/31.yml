@@ -1,0 +1,42 @@
+- hosts: intranetweb
+  tasks:
+     
+    - set_fact:
+        diag: Restrict the use of Docker's default bridge docker0
+        num: 31
+    - debug:
+        var: diag
+    - debug:
+        var: num
+
+    - shell: mkdir -p /etc/default
+
+    - lineinfile:
+        path: /etc/default/docker
+        regexp: 'DOCKER_OPTS='
+        line: 'DOCKER_OPTS="--icc=false'
+        inserafter: EOF
+        create: yes
+
+    - lineinfile:
+        regexp: "DOCKER_OPTS"
+        line: 'DOCKER_OPTS="--selinux-enabled"'
+        create: yes
+        insertafter: EOF
+
+    - shell: mkdir -p lib/systemd/system/docker.service
+
+    - lineinfile:
+        line: |
+            EnvironmentFile=/etc/default/docker
+            ExecStart=/usr/bin/dockerd -H fd:// $DOCKER_OPTS
+
+    - shell: service docker.service restart \ service docker.socket restart
+
+    - block:
+        - set_fact:
+            result: "{{{'num':num, 'diag':diag, 'details':['Limit the utilization of Docker default bridge, docker0.'], 'status':'Action Completed'}}}"
+        - copy:
+            content: "{{ result }}"
+            dest: "../../log/docker/action/{{num}}.json"
+          delegate_to: localhost

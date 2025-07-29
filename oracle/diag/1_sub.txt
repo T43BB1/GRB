@@ -1,0 +1,23 @@
+---
+- name: SQL login test
+  shell: echo "select * from test_grb;" | docker exec -i oraclegrb sqlplus {{ my_item.id }}/{{ my_item.pw }}
+  register: result_shell
+  ignore_errors: yes
+
+- debug:
+    msg: "{{ result_shell.stdout }}"
+- set_fact:
+    report: >
+      {% if 'ORA-01017' in result_shell.stdout or 'ORA-28009' in result_shell.stdout or 'ORA-40371' in result_shell.stdout %}
+      good {{ my_item.id }}
+      {% else %}
+      weak {{ my_item.id }}
+      {% endif %}
+# weak good 
+- set_fact:
+    weak_ids: "{{ weak_ids + [my_item.id] }}"
+  when: (report | regex_search('weak')) is not none
+- debug:
+    msg: "{{ (report | regex_search('weak')) is not none }}"
+- debug:
+    msg: "{{ report }}"

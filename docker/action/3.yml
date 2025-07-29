@@ -1,0 +1,24 @@
+- hosts: intranetweb
+  tasks:
+     
+    - set_fact:
+        diag: Set up Docker daemon auditing
+        num: 3
+    - debug:
+        var: diag
+    - debug:
+        var: num
+
+    - lineinfile:
+        path: /etc/audit/rules.d/audit.rules
+        line: '-w /usr/bin/docker'
+
+    - shell: service auditd restart
+
+    - block:
+        - set_fact:
+            result: "{{{'num':num, 'diag':diag, 'details':['The audit setup is complete'], 'status':'Action Completed'}}}"
+        - copy:
+            content: "{{ result }}"
+            dest: "../../log/docker/action/{{num}}.json"
+          delegate_to: localhost

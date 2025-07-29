@@ -1,0 +1,110 @@
+
+PLAY [actionlist 3] ************************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "diag": "Align security policies and password policies"
+}
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "num": 3
+}
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": [
+        "PASSWORD_REUSE_MAX",
+        "PASSWORD_VERIFY_FUNCTION",
+        "PASSWORD_REUSE_TIME"
+    ]
+}
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11] => (item=['PASSWORD_REUSE_MAX', 'verify_fuction'])
+ok: [10.0.2.11] => (item=['PASSWORD_VERIFY_FUNCTION', '3'])
+ok: [10.0.2.11] => (item=['PASSWORD_REUSE_TIME', '7'])
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": [
+        "verify_fuction",
+        "3",
+        "7"
+    ]
+}
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": [
+        {
+            "resrc": "PASSWORD_REUSE_MAX",
+            "value": "verify_fuction"
+        },
+        {
+            "resrc": "PASSWORD_VERIFY_FUNCTION",
+            "value": "3"
+        },
+        {
+            "resrc": "PASSWORD_REUSE_TIME",
+            "value": "7"
+        }
+    ]
+}
+
+TASK [set_fact] ****************************************************************
+skipping: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+skipping: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+skipping: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+skipping: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": "조치완료"
+}
+
+TASK [set_fact] ****************************************************************
+skipping: [10.0.2.11]
+
+TASK [copy] ********************************************************************
+skipping: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [copy] ********************************************************************
+changed: [10.0.2.11 -> localhost]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "result": {
+        "details": [
+            "Password policies named PASSWORD_REUSE_MAX, PASSWORD_VERIFY_FUNCTION, PASSWORD_REUSE_TIME have been changed as per your input, {'resrc': 'PASSWORD_REUSE_MAX', 'value': 'verify_fuction'}, {'resrc': 'PASSWORD_VERIFY_FUNCTION', 'value': '3'}, {'resrc': 'PASSWORD_REUSE_TIME', 'value': '7'}"
+        ],
+        "diag": "Align security policies and password policies",
+        "num": 3,
+        "status": "Action Completed"
+    }
+}
+
+PLAY RECAP *********************************************************************
+10.0.2.11                  : ok=14   changed=1    unreachable=0    failed=0    skipped=6    rescued=0    ignored=0   
+

@@ -1,0 +1,1 @@
+{"num": 19, "diag": "Set ownership for /var/run/docker.sock", "weak": false, "reason": ["The owner and group of the /var/run/docker.sock are root."], "bypass": null}

@@ -1,0 +1,8 @@
+{
+    "diag": "Check for files and directories with no owner or group",
+    "num": 6,
+    "reason": [
+        "Files and directories exist with an assigned user and group"
+    ],
+    "weak": false
+}

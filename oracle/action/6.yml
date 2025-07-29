@@ -1,0 +1,44 @@
+---
+- name: checklist 6
+  hosts: intranetweb
+  
+  tasks:
+  # header
+  - set_fact:
+      diag: Remove user access to system tables
+      num: 6
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  - set_fact:
+      weak_owner: "{{ bypass[0].weak_owner }}"
+  - debug:
+      msg: "{{ weak_owner }}"
+
+  # action result
+ 
+  - debug:
+      msg: 조치완료
+  # 조치 결과 디테일 / status는 점검 완료
+  - set_fact:
+      result: "{{{'num':num, 'diag':diag, 'details':['Access to tables restricted to DBA only named '+weak_owner | join(', ')+' has been configured to prevent access by general users.'], 'status':'Action Completed'}}}"
+  - copy:
+      content: "{{ result }}"
+      dest: "../../log/oracle/action/{{num}}.json"
+    delegate_to: localhost
+  - debug:
+      var: result
+
+  - name: Drop privilege from user object
+    shell: echo "revoke * on {{owner}}.* from *;" | docker exec -i oraclegrb sqlplus C##grb/dkagh1
+    loop: "{{ weak_owner }}"
+    loop_control:
+      loop_var: owner
+
+
+
+# # SELECT GRANTEE, PRIVILEGE, OWNER, TABLE_NAME FROM DBA_TAB_PRIVS WHERE (OWNER='SYS' OR TABLE_NAME LIKE 'DBA_%') AND PRIVILEGE <> 'EXECUTE' AND GRANTEE NOT IN ('PUBLIC', 'AQ_ADMINISTRATOR_ROLE', 'AQ_USER_ROLE', 'AURORA$JIS$UTILITY$', 'OSE$HTTP$ADMIN', 'TRACESVR', 'CTXSYS', 'DBA', 'DELETE_CATALOG_ROLE', 'EXECUTE_CATALOG_ROLE', 'EXP_FULL_DATABASE', 'GATHER_SYSTEM_STATISTICS', 'HS_ADMIN_ROLE', 'IMP_FULL_DATABASE', 'LOGSTDBY_ADMINISTRATOR', 'MDSYS', 'ODM', 'OEM_MONITOR', 'OLAPSYS', 'ORDSYS', 'OUTLN', 'RECOVERY_CATALOG_OWNER', 'SELECT_CATALOG_ROLE', 'SNMPAGENT', 'SYSTEM', 'WKSYS', 'WKUSER', 'WMSYS', 'WM_ADMIN_ROLE', 'XDB', 'LBACSYS', 'PERFSTAT', 'XDBADMIN', 'ADM_PARALLEL_EXECUTE_TASK', 'DBFS_ROLE', 'HS_ADMIN_SELECT_ROLE', 'OLAPI_TRACE_USER', 'OLAP_XS_ADMIN', 'OWB$CLIENT', 'SYSMAN') AND GRANTEE NOT IN (SELECT GRANTEE FROM DBA_ROLE_PRIVS WHERE GRANTED_ROLE='DBA') AND GRANTEE NOT IN (SELECT USERNAME FROM DBA_USERS WHERE ACCOUNT_STATUS !='OPEN') ORDER BY GRANTEE;
+# # REVOKE SELECT ON SYS.XS$CACHE_ACTIONS FROM XS_CACHE_ADMIN; 이런식으로
+# # revok {{priv}} on {{owner}}.{{table_name}} from {{grantee}}

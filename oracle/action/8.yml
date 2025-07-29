@@ -1,0 +1,33 @@
+---
+- name: checklist 8
+  hosts: intranetweb
+  
+  tasks:
+
+  # header
+  - set_fact:
+      diag: Restrict SYSDBA login
+      num: 8
+  - debug:
+      var: diag
+  - debug:
+      var: num
+  
+  # action result
+ 
+  - debug:
+      msg: 조치완료
+  # 조치 결과 디테일 / status는 점검 완료
+  - set_fact:
+      result: "{{{'num':num, 'diag':diag, 'details':['The application of the SYSDBA login restriction has been completed.'], 'status':'Action Completed'}}}"
+  - copy:
+      content: "{{ result }}"
+      dest: "../../log/oracle/action/{{num}}.json"
+    delegate_to: localhost
+  - debug:
+      var: result
+
+  - name: Add setting to sqlnet.ora
+    shell: |
+      docker exec -i oraclegrb bash -c "grep -qxF 'SQLNET.AUTHENTICATION_SERVICES=(NONE)' /opt/oracle/oradata/dbconfig/FREE/sqlnet.ora || echo 'SQLNET.AUTHENTICATION_SERVICES=(NONE)' >> /opt/oracle/oradata/dbconfig/FREE/sqlnet.ora"
+    become: yes

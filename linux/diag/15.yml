@@ -1,0 +1,73 @@
+# DNS Zone Transfer 설정_check
+---
+- name: checklist 15
+  hosts: intranetweb
+  tasks:
+# header
+
+  - set_fact:
+      diag: Check DNS Zone Transfer settings
+      num: 15
+
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+# body
+  - name: Check if DNS service (BIND) is running
+    shell: ps -ef | grep -v grep | grep named
+    register: dns_process
+    ignore_errors: yes
+
+  - name: Check zone transfer settings in named.conf
+    shell: cat /etc/named.conf | grep "allow-transfer"
+    when: dns_process.stdout != ""
+    register: zone_transfer_setting
+    ignore_errors: yes
+
+# checking weak
+  - set_fact:
+      weak: >
+        {% if dns_process.stdout != "" and zone_transfer_setting.stdout == "" %}
+          true
+        {% else %}
+          false
+        {% endif %}
+
+  - debug:
+      var: weak
+
+# result
+  - block:
+      - debug:
+          msg: 해당없음
+      - set_fact:
+          result: "{{ {'num': num, 'diag': diag, 'weak': none, 'reason': ['N/A']} }}"
+      - copy:
+          content: "{{ result | to_nice_json }}"
+          dest: /home/ubuntu/grbprj/log/linux/diag/15.json
+        delegate_to: localhost
+    when: weak is none
+
+  - block:
+      - debug:
+          msg: 취약
+      - set_fact:
+           result: "{{ {'num': num, 'diag': diag, 'weak': true, 'reason': ['The DNS service is in use, and zone transfers are allowed for all users'], 'how_action': ['Action will configure zone transfers for specific servers and domains. Do you want to proceed?']} }}"
+      - copy:
+          content: "{{ result | to_nice_json }}"
+          dest: /home/ubuntu/grbprj/log/linux/diag/15.json
+        delegate_to: localhost
+    when: weak is not none and weak
+
+  - block:
+      - debug:
+          msg: 양호
+      - set_fact:
+          result: "{{ {'num': num, 'diag': diag, 'weak': false, 'reason': ['The DNS service is not in use, or zone transfer is allowed for authorized users']} }}"
+      - copy:
+          content: "{{ result | to_nice_json }}"
+          dest: /home/ubuntu/grbprj/log/linux/diag/15.json
+        delegate_to: localhost
+    when: weak is not none and not weak

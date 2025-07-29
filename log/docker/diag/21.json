@@ -1,0 +1,1 @@
+{"num": 21, "diag": "Set ownership for daemon.json", "weak": null, "reason": ["/var/run/docker.sock dees not exist"], "how_action": ["Set ownership"], "bypass": null}

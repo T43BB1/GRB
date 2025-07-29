@@ -1,0 +1,1 @@
+{"num": 1, "diag": "Apply the latest security patches for Docker", "weak": false, "reason": ["docker is up to date"], "bypass": null}

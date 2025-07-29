@@ -1,0 +1,11 @@
+{
+    "diag": "Check IP and port restrictions",
+    "how_action": [
+        "Action will change the IP and port restrictions for specific hosts to allow access. Do you want to proceed?"
+    ],
+    "num": 11,
+    "reason": [
+        "IP and port restrictions are not set for specific hosts to allow access"
+    ],
+    "weak": true
+}

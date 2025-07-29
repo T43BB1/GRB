@@ -1,0 +1,6 @@
+- shell: "docker exec {{item}} ps -el | grep ssh"
+  register: temp
+  ignore_errors: true
+- set_fact:
+    weak_containers: "{{weak_containers+[item]}}"
+  when: "{{temp.stdout != ''}}"

@@ -1,0 +1,105 @@
+
+PLAY [Checklist 4] *************************************************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "diag": "로그 디렉터리 및 파일 권한 설정"
+}
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "num": 4
+}
+
+TASK [Check Node.js environment] ***********************************************
+changed: [10.0.2.11]
+
+TASK [Set log directory path based on environment] *****************************
+ok: [10.0.2.11]
+
+TASK [Check permissions of log directory] **************************************
+changed: [10.0.2.11]
+
+TASK [Check if log directory is weak] ******************************************
+ok: [10.0.2.11]
+
+TASK [Find log files in log directory] *****************************************
+ok: [10.0.2.11]
+
+TASK [Check permissions of each log file] **************************************
+changed: [10.0.2.11] => (item=/var/lib/ghost/content/logs)
+changed: [10.0.2.11] => (item=/var/lib/ghost/content/logs/http___localhost_2368_development.error.log)
+changed: [10.0.2.11] => (item=/var/lib/ghost/content/logs/http___localhost_2368_development.log)
+
+TASK [Set fact for weak log files] *********************************************
+ok: [10.0.2.11] => (item={'changed': True, 'stdout': 'total 392\n-rw-r--r--. 1 node node  13317 Oct 24 07:39 http___localhost_2368_development.error.log\n-rw-r--r--. 1 node node 384609 Oct 28 03:14 http___localhost_2368_development.log', 'stderr': '', 'rc': 0, 'cmd': ['docker', 'exec', '-i', 'expressgrb', 'bash', '-c', 'ls -l /var/lib/ghost/content/logs'], 'start': '2024-10-28 12:47:56.013359', 'end': '2024-10-28 12:47:56.203035', 'delta': '0:00:00.189676', 'msg': '', 'invocation': {'module_args': {'_raw_params': 'docker exec -i expressgrb bash -c "ls -l /var/lib/ghost/content/logs"', '_uses_shell': False, 'expand_argument_vars': True, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'chdir': None, 'executable': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['total 392', '-rw-r--r--. 1 node node  13317 Oct 24 07:39 http___localhost_2368_development.error.log', '-rw-r--r--. 1 node node 384609 Oct 28 03:14 http___localhost_2368_development.log'], 'stderr_lines': [], 'failed': False, 'failed_when_result': False, 'item': '/var/lib/ghost/content/logs', 'ansible_loop_var': 'item'})
+ok: [10.0.2.11] => (item={'changed': True, 'stdout': '-rw-r--r--. 1 node node 13317 Oct 24 07:39 /var/lib/ghost/content/logs/http___localhost_2368_development.error.log', 'stderr': '', 'rc': 0, 'cmd': ['docker', 'exec', '-i', 'expressgrb', 'bash', '-c', 'ls -l /var/lib/ghost/content/logs/http___localhost_2368_development.error.log'], 'start': '2024-10-28 12:47:57.771469', 'end': '2024-10-28 12:47:57.986776', 'delta': '0:00:00.215307', 'msg': '', 'invocation': {'module_args': {'_raw_params': 'docker exec -i expressgrb bash -c "ls -l /var/lib/ghost/content/logs/http___localhost_2368_development.error.log"', '_uses_shell': False, 'expand_argument_vars': True, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'chdir': None, 'executable': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['-rw-r--r--. 1 node node 13317 Oct 24 07:39 /var/lib/ghost/content/logs/http___localhost_2368_development.error.log'], 'stderr_lines': [], 'failed': False, 'failed_when_result': False, 'item': '/var/lib/ghost/content/logs/http___localhost_2368_development.error.log', 'ansible_loop_var': 'item'})
+ok: [10.0.2.11] => (item={'changed': True, 'stdout': '-rw-r--r--. 1 node node 384609 Oct 28 03:14 /var/lib/ghost/content/logs/http___localhost_2368_development.log', 'stderr': '', 'rc': 0, 'cmd': ['docker', 'exec', '-i', 'expressgrb', 'bash', '-c', 'ls -l /var/lib/ghost/content/logs/http___localhost_2368_development.log'], 'start': '2024-10-28 12:47:59.509283', 'end': '2024-10-28 12:47:59.746304', 'delta': '0:00:00.237021', 'msg': '', 'invocation': {'module_args': {'_raw_params': 'docker exec -i expressgrb bash -c "ls -l /var/lib/ghost/content/logs/http___localhost_2368_development.log"', '_uses_shell': False, 'expand_argument_vars': True, 'stdin_add_newline': True, 'strip_empty_ends': True, 'argv': None, 'chdir': None, 'executable': None, 'creates': None, 'removes': None, 'stdin': None}}, 'stdout_lines': ['-rw-r--r--. 1 node node 384609 Oct 28 03:14 /var/lib/ghost/content/logs/http___localhost_2368_development.log'], 'stderr_lines': [], 'failed': False, 'failed_when_result': False, 'item': '/var/lib/ghost/content/logs/http___localhost_2368_development.log', 'ansible_loop_var': 'item'})
+
+TASK [Check if any log files are weak] *****************************************
+ok: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+skipping: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+skipping: [10.0.2.11]
+
+TASK [copy] ********************************************************************
+skipping: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "msg": "취약"
+}
+
+TASK [set_fact] ****************************************************************
+ok: [10.0.2.11]
+
+TASK [copy] ********************************************************************
+ok: [10.0.2.11 -> localhost]
+
+TASK [debug] *******************************************************************
+skipping: [10.0.2.11]
+
+TASK [set_fact] ****************************************************************
+skipping: [10.0.2.11]
+
+TASK [copy] ********************************************************************
+skipping: [10.0.2.11]
+
+TASK [debug] *******************************************************************
+ok: [10.0.2.11] => {
+    "result": {
+        "bypass": [
+            {
+                "log_dir": "  /var/lib/ghost/content/logs\n",
+                "weak_log_dir": true,
+                "weak_log_files": [
+                    "/var/lib/ghost/content/logs",
+                    "/var/lib/ghost/content/logs/http___localhost_2368_development.error.log",
+                    "/var/lib/ghost/content/logs/http___localhost_2368_development.log"
+                ]
+            }
+        ],
+        "diag": "로그 디렉터리 및 파일 권한 설정",
+        "how_action": [
+            "Action will change the log directory permissions. Do you want to proceed?"
+        ],
+        "num": 4,
+        "reason": [
+            "Log Directory Permissions are weak."
+        ],
+        "weak": true
+    }
+}
+
+PLAY RECAP *********************************************************************
+10.0.2.11                  : ok=16   changed=3    unreachable=0    failed=0    skipped=6    rescued=0    ignored=0   
+

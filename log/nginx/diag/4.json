@@ -1,0 +1,1 @@
+{"num": 4, "diag": "\ud30c\uc77c \uc5c5\ub85c\ub4dc \ubc0f \ub2e4\uc6b4\ub85c\ub4dc \uc81c\ud55c", "weak": true, "reason": ["client_max_body_size is not set."], "bypass": [{}], "how_action": ["Action will add \"client_max_body_size 20M;\" to nginx.conf. Do you want to proceed?"]}

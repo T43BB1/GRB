@@ -1,0 +1,65 @@
+# 접속 IP 및 포트 제한_setup
+# centos8 부터는 hosts.deny hosts.allow 파일을 지원하지 않기에 RHEL 버전에 따라 대응 방법이 달라야하는 부분 수정 필요
+
+---
+- name: actionlist 11
+  hosts: intranetweb
+  tasks:
+
+  - set_fact:
+      diag: Change deny setting of /etc/hosts.deny and Allow specific IPs, services in /etc/hosts.allow
+      num: 11
+
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+
+  - name: Set default deny in /etc/hosts.deny
+    lineinfile:
+      path: /etc/hosts.deny
+      line: 'ALL: ALL'
+      state: present
+    notify: restart_network_services
+
+  - name: Allow specific IPs and services in /etc/hosts.allow
+    lineinfile:
+      path: /etc/hosts.allow
+      line: 'sshd: 192.168.0.10, 192.168.0.11'
+      state: present
+    notify: restart_network_services
+
+  - name: Add iptables rule to allow specific IPs and services
+    shell: iptables -A INPUT -p tcp -s 192.168.0.10 --dport 22 -j ACCEPT
+    notify: save_iptables
+
+  - name: Add firewalld rule to allow specific IPs and services
+    shell: firewall-cmd --zone=public --add-rich-rule='rule family="ipv4" source address="192.168.0.10" port protocol="tcp" port="22" accept'
+    notify: reload_firewalld
+
+  handlers:
+    - name: restart_network_services
+      service:
+        name: network
+        state: restarted
+
+    - name: save_iptables
+      shell: iptables-save > /etc/iptables/rules.v4
+
+    - name: reload_firewalld
+      shell: firewall-cmd --reload
+
+    # action result
+ 
+    - debug:
+        msg: 조치완료
+    # 조치 결과 디테일 / status는 점검 완료
+    - set_fact:
+        result: "{{ {'num': num, 'diag': diag, 'details': ['hihi check~ Changing the settings of /etc/hosts.deny and /etc/hosts.allow is completed'], 'status': 'Action Completed'} }}"
+    - copy:
+        content: "{{ result }}"
+        dest: /home/ubuntu/grbprj/log/linux/action/11.json
+      delegate_to: localhost
+    - debug:
+        var: result

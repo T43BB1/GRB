@@ -1,0 +1,20 @@
+- hosts: intranetweb
+  tasks:
+     
+    - set_fact:
+        diag: Set access permissions for /etc/docker directory
+        num: 18
+    - debug:
+        var: diag
+    - debug:
+        var: num
+
+    - shell: chmod 755 /etc/docker
+
+    - block:
+        - set_fact:
+            result: "{{{'num':num, 'diag':diag, 'details':['Configure access permissions for the /etc/docker directory.'], 'status':'Action Completed'}}}"
+        - copy:
+            content: "{{ result }}"
+            dest: "../../log/docker/action/{{num}}.json"
+          delegate_to: localhost

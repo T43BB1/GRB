@@ -1,0 +1,1 @@
+{"num": 3, "diag": "Set up Docker daemon auditing", "weak": false, "reason": ["/usr/bin/docker file has audit settings applied."], "bypass": null}

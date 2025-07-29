@@ -1,0 +1,1 @@
+{"num": 11, "diag": "Disable legacy registry (v1)", "weak": true, "reason": ["The legacy registry (v1) is enabled."], "how_action": ["disable the legacy registry (v1)"], "bypass": null}

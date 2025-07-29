@@ -1,0 +1,62 @@
+# /etc/shadow 파일 소유자 및 권한 설정_check
+---
+- name: checklist 8
+  hosts: intranetweb
+  tasks: 
+# header
+      
+  - set_fact:
+      diag: Check /etc/shadow file owner and permission
+      num: 8
+
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+# body
+  - name: Check owner and permissions of /etc/shadow
+    command: ls -l /etc/shadow
+    register: shadow_file_info
+
+# checking weak
+  - set_fact:
+      weak: not (shadow_file_info.stdout.split()[2] == 'root' and shadow_file_info.stdout.split()[0] == '-r--------.')
+
+  - debug:
+      var: weak
+
+# result
+  - block:
+      - debug:
+          msg: 해당없음
+      - set_fact:
+          result: "{{ {'num': num, 'diag': diag, 'weak': none, 'reason': ['N/A']} }}"
+      - copy:
+          content: "{{ result | to_nice_json }}"
+          dest: /home/ubuntu/grbprj/log/linux/diag/8.json
+        delegate_to: localhost
+    when: weak is none
+
+  - block:
+      - debug:
+          msg: 취약
+      - set_fact:
+          result: "{{ {'num': num, 'diag': diag, 'weak': True, 'reason': ['Owner of /etc/shadow file is not root or permissions are set over 400'], 'how_action': ['Action will change the owner and permissions of the /etc/shadow file. Do you want to proceed?']} }}"
+      - copy:
+          content: "{{ result | to_nice_json }}"
+          dest: /home/ubuntu/grbprj/log/linux/diag/8.json
+        delegate_to: localhost
+    when: weak is not none and weak
+
+  - block:
+      - debug:
+          msg: 양호
+      - set_fact:
+          result: "{{ {'num': num, 'diag': diag, 'weak': False, 'reason': ['The owner of the /etc/shadow file is root, and the permission is set to 400 or less']} }}"
+      - copy:
+          content: "{{ result | to_nice_json }}"
+          dest: /home/ubuntu/grbprj/log/linux/diag/8.json
+        delegate_to: localhost
+    when: weak is not none and not weak
+

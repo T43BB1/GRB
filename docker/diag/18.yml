@@ -1,0 +1,57 @@
+- hosts: intranetweb
+  tasks:
+    # header
+    - set_fact:
+        diag: Set access permissions for /etc/docker directory
+        num: 18
+    - debug:
+        var: diag
+    - debug:
+        var: num
+    
+    # body
+    - shell: "ls -ld /etc/docker"
+      register: ret
+    
+    - set_fact:
+        priv: "{{ret.stdout | regex_search('.{10}')}}"
+    - debug:
+        var: priv
+    
+    # weak?
+    - set_fact:
+        weak: "{{(priv | regex_search('.....-..-.')) is none}}"
+    - debug:
+        var: weak
+    
+    - set_fact:
+        reason: "{{['Improper permissions on /etc/docker directory.', 'Current: {{priv}} Desired: 755']}}"
+      when: weak
+    
+    - set_fact:
+        reason: "{{['Proper permissions on /etc/docker directory.']}}"
+      when: not weak
+
+    - set_fact:
+        bypass: null
+    - debug:
+        var: bypass
+
+    # result
+    - block:
+        - debug:
+            msg: 취약
+        - copy:
+            content: "{{ {'num':num, 'diag':diag, 'weak':True , 'reason':reason, 'how_action':['Set access permission'], 'bypass':bypass} | to_json }}"
+            dest: "../../log/docker/diag/{{num}}.json"
+          delegate_to: localhost
+      when: weak
+    
+    - block:
+        - debug:
+            msg: 양호
+        - copy:
+            content: "{{ {'num':num, 'diag':diag, 'weak':False , 'reason':reason, 'bypass':bypass} | to_json }}"
+            dest: "../../log/docker/diag/{{num}}.json"
+          delegate_to: localhost
+      when: not weak

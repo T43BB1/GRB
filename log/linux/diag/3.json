@@ -1,0 +1,16 @@
+{
+    "bypass": [
+        {
+            "reason": "Account lockout threshold exceeded 5 attempts"
+        }
+    ],
+    "diag": "Check account lockout threshold settings",
+    "how_action": [
+        "Action will set account lockout threshold to 5 attempts. Do you want to proceed?"
+    ],
+    "num": 3,
+    "reason": [
+        "Account lockout threshold is set to more than 5 attempts"
+    ],
+    "weak": true
+}

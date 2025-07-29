@@ -1,0 +1,1 @@
+{"num": 15, "diag": "Set ownership for docker.socket", "weak": false, "reason": ["The owner and group of the docker.socket file are root."], "bypass": null}

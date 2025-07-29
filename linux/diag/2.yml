@@ -1,0 +1,82 @@
+# 패스워드 복잡도 설정_check
+---
+- name: checklist 2
+  hosts: intranetweb
+  tasks: 
+# header
+
+  - set_fact:
+      diag: Check password complexity settings
+      num: 2
+    
+  - debug:
+      var: diag
+  - debug:
+      var: num
+ 
+# body
+  - name: Check password complexity in /etc/pam.d/system-auth
+    shell: cat /etc/pam.d/system-auth | grep pam_pwquality.so
+    register: system_auth_config
+    ignore_errors: yes
+
+  - name: Check enforce_for_root in /etc/pam.d/system-auth
+    shell: cat /etc/pam.d/system-auth | grep enforce_for_root
+    register: enforce_for_root_config
+    ignore_errors: yes
+
+  - name: Check password complexity settings in /etc/security/pwquality.conf
+    command: cat /etc/security/pwquality.conf
+    register: pwquality_config
+    ignore_errors: yes
+
+# checking weak
+  - set_fact:
+      weak: >
+        {{ 
+          'pam_pwquality.so' not in system_auth_config.stdout or
+          'enforce_for_root' not in enforce_for_root_config.stdout or
+          pwquality_config.stdout is search('minlen = 8') == False or
+          pwquality_config.stdout is search('dcredit = -1') == False or
+          pwquality_config.stdout is search('ucredit = -1') == False or
+          pwquality_config.stdout is search('lcredit = -1') == False or
+          pwquality_config.stdout is search('ocredit = -1') == False
+        }}
+
+  - debug:
+      var: weak
+
+# result
+  - block:
+      - debug:
+          msg: 해당없음
+      - set_fact:
+          result: "{{ {'num': num, 'diag': diag, 'weak': none, 'reason': ['N/A']} }}"
+      - copy:
+          content: "{{ result | to_nice_json }}"
+          dest: /home/ubuntu/grbprj/log/linux/diag/2.json
+        delegate_to: localhost
+    when: weak is none
+
+  - block:
+      - debug:
+          msg: 취약
+      - set_fact:
+          result: "{{ {'num': num, 'diag': diag, 'weak': True, 'reason': ['Password complexity and enforce_for_root settings are not applied'], 'bypass': [{'reason': 'Password complexity and enforce_for_root not applied'}], 'how_action': ['Action will set enforce_for_root and password complexity. Do you want to proceed?']} }}"
+      - copy:
+          content: "{{ result | to_nice_json }}"
+          dest: /home/ubuntu/grbprj/log/linux/diag/2.json
+        delegate_to: localhost
+    when: weak is not none and weak
+
+  - block:
+      - debug:
+          msg: 양호
+      - set_fact:
+          result: "{{ {'num': num, 'diag': diag, 'weak': False, 'reason': ['Password complexity and enforce_for_root settings are applied']} }}"
+      - copy:
+          content: "{{ result | to_nice_json }}"
+          dest: /home/ubuntu/grbprj/log/linux/diag/2.json
+        delegate_to: localhost
+    when: weak is not none and not weak
+

@@ -1,0 +1,1 @@
+{"num": 14, "diag": "Set access permissions for docker.service file", "weak": false, "reason": ["Proper permissions on docker.service."], "bypass": "/usr/lib/systemd/system/docker.service"}

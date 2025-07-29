@@ -1,0 +1,1 @@
+{"num": 6, "diag": "Audit docker.service", "weak": true, "reason": ["/lib/systemd/system/docker.service file does not have audit settings applied."], "how_action": ["apply audit setting"], "bypass": null}

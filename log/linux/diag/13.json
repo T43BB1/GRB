@@ -1,0 +1,11 @@
+{
+    "diag": "Check Sendmail and Postfix versions",
+    "how_action": [
+        "Action will install the latest security patches for Sendmail and Postfix. Do you want to proceed?"
+    ],
+    "num": 13,
+    "reason": [
+        "The versions of Sendmail and Postfix are vulnerable"
+    ],
+    "weak": true
+}

@@ -1,0 +1,27 @@
+- hosts: intranetweb
+  tasks:
+     
+    - set_fact:
+        diag: Limit network traffic between containers using default bridge
+        num: 9
+    - debug:
+        var: diag
+    - debug:
+        var: num
+    
+    - shell: mkdir -p /etc/default
+
+    - lineinfile:
+        path: /etc/default/docker
+        line: 'DOCKER_OPTS="--icc=false'
+        create: yes
+
+    - shell: service docker.socket restart \ service docker.service restart
+
+    - block:
+        - set_fact:
+            result: "{{{'num':num, 'diag':diag, 'details':['limit default bridge'], 'status':'Action Completed'}}}"
+        - copy:
+            content: "{{ result }}"
+            dest: "../../log/docker/action/{{num}}.json"
+          delegate_to: localhost

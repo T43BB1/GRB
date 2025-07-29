@@ -1,0 +1,113 @@
+---
+- name: checklist 6
+  hosts: intranetweb
+  
+  tasks:
+
+  # header
+  - set_fact:
+      diag: Remove user access to system tables
+      num: 6
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  # body
+
+  - name: SQL shell
+    shell: echo "SELECT DISTINCT GRANTEE WEAK_GRANTEE FROM DBA_TAB_PRIVS WHERE (OWNER='SYS' OR TABLE_NAME LIKE 'DBA_%') AND PRIVILEGE <> 'EXECUTE' AND GRANTEE NOT IN ('PUBLIC', 'AQ_ADMINISTRATOR_ROLE', 'AQ_USER_ROLE', 'AURORA$JIS$UTILITY$', 'OSE$HTTP$ADMIN', 'TRACESVR', 'CTXSYS', 'DBA', 'DELETE_CATALOG_ROLE', 'EXECUTE_CATALOG_ROLE', 'EXP_FULL_DATABASE', 'GATHER_SYSTEM_STATISTICS', 'HS_ADMIN_ROLE', 'IMP_FULL_DATABASE', 'LOGSTDBY_ADMINISTRATOR', 'MDSYS', 'ODM', 'OEM_MONITOR', 'OLAPSYS', 'ORDSYS', 'OUTLN', 'RECOVERY_CATALOG_OWNER', 'SELECT_CATALOG_ROLE', 'SNMPAGENT', 'SYSTEM', 'WKSYS', 'WKUSER', 'WMSYS', 'WM_ADMIN_ROLE', 'XDB', 'LBACSYS', 'PERFSTAT', 'XDBADMIN', 'ADM_PARALLEL_EXECUTE_TASK', 'DBFS_ROLE', 'HS_ADMIN_SELECT_ROLE', 'OLAPI_TRACE_USER', 'OLAP_XS_ADMIN', 'OWB$CLIENT', 'SYSMAN') AND GRANTEE NOT IN (SELECT GRANTEE FROM DBA_ROLE_PRIVS WHERE GRANTED_ROLE='DBA') AND GRANTEE NOT IN (SELECT USERNAME FROM DBA_USERS WHERE ACCOUNT_STATUS !='OPEN') ORDER BY GRANTEE;" | docker exec -i oraclegrb sqlplus C##grb/dkagh1
+    register: result1
+  - name: SQL shell
+    shell: echo "SELECT DISTINCT OWNER AS WEAK_OWNER FROM DBA_TAB_PRIVS WHERE (OWNER='SYS' OR TABLE_NAME LIKE 'DBA_%') AND PRIVILEGE <> 'EXECUTE' AND GRANTEE NOT IN ('PUBLIC', 'AQ_ADMINISTRATOR_ROLE', 'AQ_USER_ROLE', 'AURORA$JIS$UTILITY$', 'OSE$HTTP$ADMIN', 'TRACESVR', 'CTXSYS', 'DBA', 'DELETE_CATALOG_ROLE', 'EXECUTE_CATALOG_ROLE', 'EXP_FULL_DATABASE', 'GATHER_SYSTEM_STATISTICS', 'HS_ADMIN_ROLE', 'IMP_FULL_DATABASE', 'LOGSTDBY_ADMINISTRATOR', 'MDSYS', 'ODM', 'OEM_MONITOR', 'OLAPSYS', 'ORDSYS', 'OUTLN', 'RECOVERY_CATALOG_OWNER', 'SELECT_CATALOG_ROLE', 'SNMPAGENT', 'SYSTEM', 'WKSYS', 'WKUSER', 'WMSYS', 'WM_ADMIN_ROLE', 'XDB', 'LBACSYS', 'PERFSTAT', 'XDBADMIN', 'ADM_PARALLEL_EXECUTE_TASK', 'DBFS_ROLE', 'HS_ADMIN_SELECT_ROLE', 'OLAPI_TRACE_USER', 'OLAP_XS_ADMIN', 'OWB$CLIENT', 'SYSMAN') AND GRANTEE NOT IN (SELECT GRANTEE FROM DBA_ROLE_PRIVS WHERE GRANTED_ROLE='DBA') AND GRANTEE NOT IN (SELECT USERNAME FROM DBA_USERS WHERE ACCOUNT_STATUS !='OPEN');" | docker exec -i oraclegrb sqlplus C##grb/dkagh1
+    register: result2
+  - name: please check grantees what is prob. weak
+    debug:
+      msg: "{{ result1.stdout_lines | reject('search', 'SQL') | reject('search', 'Version') | reject('search', 'SQL') | reject('search', 'Ora') | reject('search', 'Connect') | reject('search', 'Last') | reject('equalto', '') }}"
+  - name: please check owners what is prob. weak
+    debug:
+      msg: "{{ result2.stdout_lines | reject('search', 'SQL') | reject('search', 'Version') | reject('search', 'SQL') | reject('search', 'Ora') | reject('search', 'Connect') | reject('search', 'Last') | reject('equalto', '') }}"
+
+  ####
+  #my test
+  - name: SQL shell GRANTEE
+    shell: echo "SELECT GRANTEE FROM DBA_TAB_PRIVS WHERE (OWNER='SYS' OR TABLE_NAME LIKE 'DBA_%') AND PRIVILEGE <> 'EXECUTE' AND GRANTEE NOT IN ('PUBLIC', 'AQ_ADMINISTRATOR_ROLE', 'AQ_USER_ROLE', 'AURORA$JIS$UTILITY$', 'OSE$HTTP$ADMIN', 'TRACESVR', 'CTXSYS', 'DBA', 'DELETE_CATALOG_ROLE', 'EXECUTE_CATALOG_ROLE', 'EXP_FULL_DATABASE', 'GATHER_SYSTEM_STATISTICS', 'HS_ADMIN_ROLE', 'IMP_FULL_DATABASE', 'LOGSTDBY_ADMINISTRATOR', 'MDSYS', 'ODM', 'OEM_MONITOR', 'OLAPSYS', 'ORDSYS', 'OUTLN', 'RECOVERY_CATALOG_OWNER', 'SELECT_CATALOG_ROLE', 'SNMPAGENT', 'SYSTEM', 'WKSYS', 'WKUSER', 'WMSYS', 'WM_ADMIN_ROLE', 'XDB', 'LBACSYS', 'PERFSTAT', 'XDBADMIN', 'ADM_PARALLEL_EXECUTE_TASK', 'DBFS_ROLE', 'HS_ADMIN_SELECT_ROLE', 'OLAPI_TRACE_USER', 'OLAP_XS_ADMIN', 'OWB$CLIENT', 'SYSMAN') AND GRANTEE NOT IN (SELECT GRANTEE FROM DBA_ROLE_PRIVS WHERE GRANTED_ROLE='DBA') AND GRANTEE NOT IN (SELECT USERNAME FROM DBA_USERS WHERE ACCOUNT_STATUS !='OPEN') ORDER BY GRANTEE;" | docker exec -i oraclegrb sqlplus C##grb/dkagh1
+    register: result_gran
+  - name: SQL shell PRIVILEGE
+    shell: echo "SELECT PRIVILEGE FROM DBA_TAB_PRIVS WHERE (OWNER='SYS' OR TABLE_NAME LIKE 'DBA_%') AND PRIVILEGE <> 'EXECUTE' AND GRANTEE NOT IN ('PUBLIC', 'AQ_ADMINISTRATOR_ROLE', 'AQ_USER_ROLE', 'AURORA$JIS$UTILITY$', 'OSE$HTTP$ADMIN', 'TRACESVR', 'CTXSYS', 'DBA', 'DELETE_CATALOG_ROLE', 'EXECUTE_CATALOG_ROLE', 'EXP_FULL_DATABASE', 'GATHER_SYSTEM_STATISTICS', 'HS_ADMIN_ROLE', 'IMP_FULL_DATABASE', 'LOGSTDBY_ADMINISTRATOR', 'MDSYS', 'ODM', 'OEM_MONITOR', 'OLAPSYS', 'ORDSYS', 'OUTLN', 'RECOVERY_CATALOG_OWNER', 'SELECT_CATALOG_ROLE', 'SNMPAGENT', 'SYSTEM', 'WKSYS', 'WKUSER', 'WMSYS', 'WM_ADMIN_ROLE', 'XDB', 'LBACSYS', 'PERFSTAT', 'XDBADMIN', 'ADM_PARALLEL_EXECUTE_TASK', 'DBFS_ROLE', 'HS_ADMIN_SELECT_ROLE', 'OLAPI_TRACE_USER', 'OLAP_XS_ADMIN', 'OWB$CLIENT', 'SYSMAN') AND GRANTEE NOT IN (SELECT GRANTEE FROM DBA_ROLE_PRIVS WHERE GRANTED_ROLE='DBA') AND GRANTEE NOT IN (SELECT USERNAME FROM DBA_USERS WHERE ACCOUNT_STATUS !='OPEN') ORDER BY GRANTEE;" | docker exec -i oraclegrb sqlplus C##grb/dkagh1
+    register: result_priv
+  - name: SQL shell OWNER
+    shell: echo "SELECT OWNER FROM DBA_TAB_PRIVS WHERE (OWNER='SYS' OR TABLE_NAME LIKE 'DBA_%') AND PRIVILEGE <> 'EXECUTE' AND GRANTEE NOT IN ('PUBLIC', 'AQ_ADMINISTRATOR_ROLE', 'AQ_USER_ROLE', 'AURORA$JIS$UTILITY$', 'OSE$HTTP$ADMIN', 'TRACESVR', 'CTXSYS', 'DBA', 'DELETE_CATALOG_ROLE', 'EXECUTE_CATALOG_ROLE', 'EXP_FULL_DATABASE', 'GATHER_SYSTEM_STATISTICS', 'HS_ADMIN_ROLE', 'IMP_FULL_DATABASE', 'LOGSTDBY_ADMINISTRATOR', 'MDSYS', 'ODM', 'OEM_MONITOR', 'OLAPSYS', 'ORDSYS', 'OUTLN', 'RECOVERY_CATALOG_OWNER', 'SELECT_CATALOG_ROLE', 'SNMPAGENT', 'SYSTEM', 'WKSYS', 'WKUSER', 'WMSYS', 'WM_ADMIN_ROLE', 'XDB', 'LBACSYS', 'PERFSTAT', 'XDBADMIN', 'ADM_PARALLEL_EXECUTE_TASK', 'DBFS_ROLE', 'HS_ADMIN_SELECT_ROLE', 'OLAPI_TRACE_USER', 'OLAP_XS_ADMIN', 'OWB$CLIENT', 'SYSMAN') AND GRANTEE NOT IN (SELECT GRANTEE FROM DBA_ROLE_PRIVS WHERE GRANTED_ROLE='DBA') AND GRANTEE NOT IN (SELECT USERNAME FROM DBA_USERS WHERE ACCOUNT_STATUS !='OPEN') ORDER BY GRANTEE;" | docker exec -i oraclegrb sqlplus C##grb/dkagh1
+    register: result_owner
+  - name: SQL shell TABLE_NAME
+    shell: echo "SELECT TABLE_NAME FROM DBA_TAB_PRIVS WHERE (OWNER='SYS' OR TABLE_NAME LIKE 'DBA_%') AND PRIVILEGE <> 'EXECUTE' AND GRANTEE NOT IN ('PUBLIC', 'AQ_ADMINISTRATOR_ROLE', 'AQ_USER_ROLE', 'AURORA$JIS$UTILITY$', 'OSE$HTTP$ADMIN', 'TRACESVR', 'CTXSYS', 'DBA', 'DELETE_CATALOG_ROLE', 'EXECUTE_CATALOG_ROLE', 'EXP_FULL_DATABASE', 'GATHER_SYSTEM_STATISTICS', 'HS_ADMIN_ROLE', 'IMP_FULL_DATABASE', 'LOGSTDBY_ADMINISTRATOR', 'MDSYS', 'ODM', 'OEM_MONITOR', 'OLAPSYS', 'ORDSYS', 'OUTLN', 'RECOVERY_CATALOG_OWNER', 'SELECT_CATALOG_ROLE', 'SNMPAGENT', 'SYSTEM', 'WKSYS', 'WKUSER', 'WMSYS', 'WM_ADMIN_ROLE', 'XDB', 'LBACSYS', 'PERFSTAT', 'XDBADMIN', 'ADM_PARALLEL_EXECUTE_TASK', 'DBFS_ROLE', 'HS_ADMIN_SELECT_ROLE', 'OLAPI_TRACE_USER', 'OLAP_XS_ADMIN', 'OWB$CLIENT', 'SYSMAN') AND GRANTEE NOT IN (SELECT GRANTEE FROM DBA_ROLE_PRIVS WHERE GRANTED_ROLE='DBA') AND GRANTEE NOT IN (SELECT USERNAME FROM DBA_USERS WHERE ACCOUNT_STATUS !='OPEN') ORDER BY GRANTEE;" | docker exec -i oraclegrb sqlplus C##grb/dkagh1
+    register: result_table
+####
+  # - set_fact:
+  #     weak_gran: "{{ result_gran.stdout_lines | reject('search', 'SQL') | reject('search', 'Version') | reject('search', 'SQL') | reject('search', 'Ora') | reject('search', 'Connect') | reject('search', 'GRANTEE') | reject('search', '--') | reject('search', 'Last') | reject('equalto', '') | list }}"
+  # - set_fact:
+  #     weak_priv: "{{ result_priv.stdout_lines | reject('search', 'SQL') | reject('search', 'Version') | reject('search', 'SQL') | reject('search', 'Ora') | reject('search', 'Connect') | reject('search', 'PRIVILEGE') | reject('search', '--') | reject('search', 'Last') | reject('equalto', '') | list }}"
+  # - set_fact:
+  #     weak_owner: "{{ result_owner.stdout_lines | reject('search', 'SQL') | reject('search', 'Version') | reject('search', 'SQL') | reject('search', 'Ora') | reject('search', 'Connect') | reject('search', 'OWNER') | reject('search', '--') | reject('search', 'Last') | reject('equalto', '') | list }}"
+  # - set_fact:
+  #     weak_table: "{{ result_table.stdout_lines | reject('search', 'SQL') | reject('search', 'Version') | reject('search', 'SQL') | reject('search', 'Ora') | reject('search', 'Connect') | reject('search', 'TABLE_NAME') | reject('search', '--') | reject('search', 'Last') | reject('equalto', '') | list }}"
+
+  # - set_fact:
+  #     weak_set_list: "{{ weak_set_list | default([]) + [{'grantee': item.0, 'privilege': item.1, 'owner': item.2, 'table': item.3}] }}"
+  #   loop: "{{ weak_gran | zip(weak_priv, weak_owner, weak_table) | list }}"
+  # - debug:
+  #     msg: "{{ weak_set_list }}"
+  #너무 오래걸려서 나중에 풀 것!
+  # 가장 마지막에 어떻게 할지 생각하자 이놈은
+  ####
+  - set_fact:
+      weak_owner: []
+  - set_fact:
+      weak_owner: "{{ result2.stdout_lines | reject('search', 'SQL') | reject('search', 'Version') | reject('search', 'SQL') | reject('search', 'Ora') | reject('search', 'Connect') | reject('search', 'Last') | reject('search', '--') | reject('search', 'WEAK_OWNER') | reject('equalto', '') }}"
+  - debug:
+      msg: "{{ weak_owner }}"
+
+  # weak?
+  - set_fact:
+      weak: "{{ weak_owner != [] }}"
+  - debug:
+      var: weak
+
+  # result
+ 
+  - block:
+      - debug:
+          msg: 해당없음
+      - set_fact:
+          result: "{{{'num':num, 'diag':diag, 'weak':none, 'reason':['N/A']}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: "../../log/oracle/diag/{{num}}.json"
+        delegate_to: localhost
+    when: weak is none
+
+  - block:
+      - debug:
+          msg: 취약
+      - set_fact:
+          result: "{{{'num':num, 'diag':diag, 'weak':True, 'reason':['Access to tables restricted to DBA only named '+weak_owner | join(', ')+' is configured to allow access by general users.'], 'bypass':[{'weak_owner':weak_owner}], 'how_action':['Action will configure access to tables restricted to DBA only to prevent access by general users. Do you want to proceed? ']}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: "../../log/oracle/diag/{{num}}.json"
+        delegate_to: localhost
+    when: weak is not none and weak
+
+  - block:
+      - debug:
+          msg: 양호
+      - set_fact:
+          result: "{{{'num':num, 'diag':diag, 'weak':False, 'reason':['Access to tables restricted to DBA only is configured to prevent access by general users.']}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: "../../log/oracle/diag/{{num}}.json"
+        delegate_to: localhost
+    when: weak is not none and not weak
+  
+ 
+  - debug:
+      var: result

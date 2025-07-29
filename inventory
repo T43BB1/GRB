@@ -1,0 +1,4 @@
+[control_node]
+localhost ansible_connection=local
+[intranetweb]
+10.0.2.11

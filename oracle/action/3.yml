@@ -1,0 +1,80 @@
+---
+- name: actionlist 3
+  hosts: intranetweb
+  tasks:
+  - set_fact:
+      diag: Align security policies and password policies
+      num: 3
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  - set_fact:
+      weak_resource_names: "{{ bypass[0].weak_resource_names }}"
+  - debug:
+      msg: "{{ weak_resource_names }}"
+  
+  - block:
+      - set_fact:
+          new_values: "{{ bypass[2].new_values }}"
+      - set_fact:
+          alter_list: "{{ alter_list | default([]) + [{'resrc': item.0, 'value': item.1}] }}"
+        loop: "{{ weak_resource_names | zip(new_values) | list }}"
+      - debug:
+          msg: "{{ new_values }}"
+      - debug:
+          msg: "{{ alter_list }}"
+    when: bypass[2] is defined
+
+  - block:
+      - set_fact:
+          default_values: "{{ ['5', '10', 'VERIFY_FUNCTION'] }}"
+      - set_fact:
+          alter_list: "{{ alter_list | default([]) + [{'resrc': item.0, 'value': item.1}] }}"
+        loop: "{{ weak_resource_names | zip(default_values) | list }}"
+      - debug:
+          msg: "{{ default_values }}"
+      - debug:
+          msg: "{{ alter_list }}"
+    when: bypass[2] is not defined
+  
+  # - set_fact:
+  #     default_values: "{{ ['TRUE', '5', '5'] }}"
+  # - debug:
+  #     msg: "{{ default_values }}"
+
+  # action result
+ 
+  - debug:
+      msg: 조치완료
+  # 조치 결과 디테일 / status는 점검 완료
+  - block:
+      - set_fact:
+          result: "{{{'num':num, 'diag':diag, 'details':['Password policies named '+weak_resource_names | join(', ')+' have been temporarily changed, '+alter_list | join(', ')], 'status':'Action Completed'}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: "../../log/oracle/action/{{num}}.json"
+        delegate_to: localhost
+    when: bypass[2] is not defined
+  - block:
+      - set_fact:
+          result: "{{{'num':num, 'diag':diag, 'details':['Password policies named '+weak_resource_names | join(', ')+' have been changed as per your input, '+alter_list | join(', ')], 'status':'Action Completed'}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: "../../log/oracle/action/{{num}}.json"
+        delegate_to: localhost
+    when: bypass[2] is defined
+  - debug:
+      var: result
+
+
+  - name: replace policy of profile resource
+    shell: echo "alter profile DEFAULT limit {{alter_item.resrc}} {{alter_item.value}};" | docker exec -i oraclegrb sqlplus C##grb/dkagh1
+    loop: "{{ alter_list }}"
+    loop_control:
+      loop_var: alter_item
+  
+  
+  #'{"bypass": [{"weak_resource_names": ["PASSWORD_VERIFY_FUNCTION", "PASSWORD_REUSE_TIME", "PASSWORD_REUSE_MAX"]}, {"1": "Set"}, {"values": ["qwd", "asd", "erf"]}]}'
+#alter profile DEFAULT limit 'PASSWORD_VERIFY_FUNCTION' VERIFY_FUNCTION;

@@ -1,0 +1,1 @@
+{"num": 24, "diag": "Set access permissions for /etc/default/docker file", "weak": null, "reason": ["/etc/default/docker deos not exist"], "bypass": null}

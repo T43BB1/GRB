@@ -1,0 +1,1 @@
+{"num": 25, "diag": "Run containers as a non-root user", "weak": false, "reason": "There is no container running as the root user.", "bypass": []}

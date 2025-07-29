@@ -1,0 +1,39 @@
+# /etc/passwd 파일 소유자 및 권한 설정_setup
+
+---
+- name: actionlist 7
+  hosts: intranetweb
+  tasks:
+
+  - set_fact:
+      diag: Change owner and permissions of /etc/passwd
+      num: 7
+
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  - name: Set owner of /etc/passwd to root
+    command: chown root:root /etc/passwd
+    register: chown_result
+    ignore_errors: yes
+
+  - name: Set permissions of /etc/passwd to 644
+    command: chmod 644 /etc/passwd
+    register: chmod_result
+    ignore_errors: yes
+
+  # action result
+
+  - debug:
+      msg: 조치완료
+  # 조치 결과 디테일 / status는 점검 완료
+  - set_fact:
+      result: "{{ {'num': num, 'diag': diag, 'details': ['hihi check~ Changing the owner and permission of the /etc/passwd file is completed'], 'status': 'Action Completed'} }}"
+  - copy:
+      content: "{{ result }}"
+      dest: /home/ubuntu/grbprj/log/linux/action/7.json
+    delegate_to: localhost
+  - debug:
+      var: result

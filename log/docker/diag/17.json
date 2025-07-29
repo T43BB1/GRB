@@ -1,0 +1,1 @@
+{"num": 17, "diag": "Set ownership for /etc/docker directory", "weak": false, "reason": ["The owner and group of the /etc/docker directory are root."], "bypass": null}

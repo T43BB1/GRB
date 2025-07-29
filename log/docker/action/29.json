@@ -1,0 +1,1 @@
+{"num": 29, "diag": "Prohibit privileged port mapping for containers", "details": ["Disallow privileged port mapping for containers."], "status": "Action Completed"}

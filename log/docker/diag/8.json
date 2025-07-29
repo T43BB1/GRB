@@ -1,0 +1,1 @@
+{"num": 8, "diag": "Audit /etc/default/docker", "weak": true, "reason": ["/etc/default/docker file does not have audit settings applied."], "how_action": ["apply audit setting"], "bypass": null}

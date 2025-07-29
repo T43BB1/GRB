@@ -1,0 +1,72 @@
+- hosts: intranetweb
+  tasks:
+    # header
+    - set_fact:
+        diag: Run containers as a non-root user
+        num: 25
+    - debug:
+        var: diag
+    - debug:
+        var: num
+    
+    # body
+    - shell: "docker ps --quiet --all | xargs docker inspect --format '{{'{{.Id}}'}}':'{{'{{.Config.User }}'}}'"
+      register: ret
+      ignore_errors: true
+    - debug:
+        var: ret
+    
+    - set_fact:
+        root_containers: "{{ret.stdout_lines | select('search','root') | map('regex_replace', ':.*', '') | list}}"
+    - debug:
+        var: root_containers
+
+    # weak?
+    - set_fact:
+        weak: "{{root_containers != []}}"
+    - debug:
+        var: weak
+        
+    - set_fact:
+        reason: "{{roo_containers}} are running as the root user."
+      when: weak is not none and weak
+    
+    - set_fact:
+        reason: There is no container running as the root user.
+      when: weak is not none and not weak
+
+    - debug:
+        var: reason
+
+    - set_fact:
+        bypass: "{{root_containers}}"
+    - debug:
+        var: bypass
+
+    # result
+    - block:
+        - debug:
+            msg: 해당없음
+        - copy:
+            content: "{{ {'num':num, 'diag':diag, 'weak':none , 'reason':reason, 'bypass':bypass} | to_json }}"
+            dest: "../../log/docker/diag/{{num}}.json"
+          delegate_to: localhost
+      when: weak is none
+    
+    - block:
+        - debug:
+            msg: 취약
+        - copy:
+            content: "{{ {'num':num, 'diag':diag, 'weak':True , 'reason':reason, 'how_action': ['modify Dockerfile'], 'bypass':bypass} | to_json }}"
+            dest: "../../log/docker/diag/{{num}}.json"
+          delegate_to: localhost
+      when: weak is not none and weak
+    
+    - block:
+        - debug:
+            msg: 양호
+        - copy:
+            content: "{{ {'num':num, 'diag':diag, 'weak':False , 'reason':reason, 'bypass':bypass} | to_json }}"
+            dest: "../../log/docker/diag/{{num}}.json"
+          delegate_to: localhost
+      when: weak is not none and not weak

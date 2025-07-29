@@ -1,0 +1,1 @@
+[{"num": 5, "diag": "\ub514\ub809\ud130\ub9ac \ub9ac\uc2a4\ud305 \uc81c\uac70", "weak": true, "reason": ["No autoindex off setting in default.conf."], "bypass": [{}], "how_action": ["Action will add \"autoindex off;\" to default.conf. Do you want to proceed?"]}]

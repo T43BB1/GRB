@@ -1,0 +1,68 @@
+- hosts: intranetweb
+  tasks:
+    # header
+    - set_fact:
+        diag: Set access permissions for docker.service file
+        num: 14
+    - debug:
+        var: diag
+    - debug:
+        var: num
+    
+    # body
+    - shell: "systemctl show -p FragmentPath docker.service"
+      register: ret
+      ignore_errors: true
+    
+    - set_fact:
+        path: "{{ret.stdout | regex_replace('^FragmentPath=', '')}}"
+    - debug:
+        var: path
+    
+    - shell: "ls -l {{path}}"
+      register: ret
+    - debug:
+        var: ret
+    
+    - set_fact:
+        priv: "{{ret.stdout | regex_search('.{10}')}}"
+    - debug:
+        var: priv
+    
+    # weak?
+    - set_fact:
+        weak: "{{(priv | regex_search('...-.--.--')) is none}}"
+    - debug:
+        var: weak
+    
+    - set_fact:
+        reason: "{{['Improper permissions on docker.service.', 'Current: {{priv}} Desired: 644']}}"
+      when: weak
+    
+    - set_fact:
+        reason: "{{['Proper permissions on docker.service.']}}"
+      when: not weak
+
+    - set_fact:
+        bypass: "{{path}}"
+    - debug:
+        var: bypass
+
+    # result
+    - block:
+        - debug:
+            msg: 취약
+        - copy:
+            content: "{{ {'num':num, 'diag':diag, 'weak':True , 'reason':reason, 'how_action': ['Set access permission'], 'bypass':bypass} | to_json }}"
+            dest: "../../log/docker/diag/{{num}}.json"
+          delegate_to: localhost
+      when: weak
+    
+    - block:
+        - debug:
+            msg: 양호
+        - copy:
+            content: "{{ {'num':num, 'diag':diag, 'weak':False , 'reason':reason, 'bypass':bypass} | to_json }}"
+            dest: "../../log/docker/diag/{{num}}.json"
+          delegate_to: localhost
+      when: not weak

@@ -1,0 +1,62 @@
+{
+    "1": {
+        "num": 1,
+        "diag": "Check root remote access restriction"
+    },
+    "2": {
+        "num": 2,
+        "diag": "Check password complexity settings"
+    },
+    "3": {
+        "num": 3,
+        "diag": "Check account lockout threshold settings"
+    },
+    "4": {
+        "num": 4,
+        "diag": "Check password maximum usage period"
+    },
+    "5": {
+        "num": 5,
+        "diag": "Check root home and path directory permission settings"
+    },
+    "6": {
+        "num": 6,
+        "diag": "Check for files and directories with no owner or group"
+    },
+    "7": {
+        "num": 7,
+        "diag": "Check /etc/passwd file owner and permission"
+    },
+    "8": {
+        "num": 8,
+        "diag": "Check /etc/shadow file owner and permission"
+    },
+    "9": {
+        "num": 9,
+        "diag": "Check /etc/hosts file owner and permission"
+    },
+    "10": {
+        "num": 10,
+        "diag": "Check SUID and SGID settings"
+    },
+    "11": {
+        "num": 11,
+        "diag": "Check IP and port restrictions"
+    },
+    "12": {
+        "num": 12,
+        "diag": "Check Anonymous FTP settings"
+    },
+    "13": {
+        "num": 13,
+        "diag": "Check Sendmail and Postfix versions"
+    },
+    "14": {
+        "num": 14,
+        "diag": "Check DNS (BIND) security version"
+    },
+    "15": {
+        "num": 15,
+        "diag": "Check DNS Zone Transfer settings"
+    }
+}

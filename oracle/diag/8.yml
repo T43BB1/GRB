@@ -1,0 +1,76 @@
+---
+- name: checklist 8
+  hosts: intranetweb
+  
+  tasks:
+
+  # header
+  - set_fact:
+      diag: Restrict SYSDBA login
+      num: 8
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  # body
+
+  - name: SQL shell
+    shell: docker exec -i oraclegrb bash -c "cat /opt/oracle/oradata/dbconfig/FREE/sqlnet.ora"
+    register: result_8
+  # - name: print
+  #   debug:
+  #     msg: "{{ result_8.stdout }}"
+  # - name: print
+  #   debug:
+  #     msg: >
+  #       {% if 'SQLNET.AUTHENTICATION_SERVICES = (NONE)' in result.stdout %}
+  #         good
+  #       {% else %}
+  #         there is no setting! WEAK! {{ result.stdout }}
+  #       {% endif %}
+
+  # weak?
+  - set_fact:
+      weak: "{{ 'SQLNET.AUTHENTICATION_SERVICES = (NONE)' not in result_8.stdout }}"
+  - debug:
+      var: weak
+
+# result
+ 
+  - block:
+      - debug:
+          msg: 해당없음
+      - set_fact:
+          result: "{{{'num':num, 'diag':diag, 'weak':none, 'reason':['N/A']}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: "../../log/oracle/diag/{{num}}.json"
+        delegate_to: localhost
+    when: weak is none
+
+  - block:
+      - debug:
+          msg: 취약
+      - set_fact:
+          result: "{{{'num':num, 'diag':diag, 'weak':True, 'reason':['SYSDBA login restriction is not applied.'], 'how_action':[' Action will apply the SYSDBA login restriction. Do you want to proceed? ']}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: "../../log/oracle/diag/{{num}}.json"
+        delegate_to: localhost
+    when: weak is not none and weak
+
+  - block:
+      - debug:
+          msg: 양호
+      - set_fact:
+          result: "{{{'num':num, 'diag':diag, 'weak':False, 'reason':['SYSDBA login restriction is already applied.']}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: "../../log/oracle/diag/{{num}}.json"
+        delegate_to: localhost
+    when: weak is not none and not weak
+  
+ 
+  - debug:
+      var: result

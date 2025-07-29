@@ -1,0 +1,1 @@
+{"num": 16, "diag": "Set access permissions for docker.socket file", "weak": false, "reason": ["Proper permissions on docker.socket."], "bypass": "/usr/lib/systemd/system/docker.socket"}

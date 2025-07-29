@@ -1,0 +1,59 @@
+- hosts: intranetweb
+  tasks:
+    # header
+    - set_fact:
+        diag: Remove unnecessary users from the Docker group
+        num: 2
+    - debug:
+        var: diag
+    - debug:
+        var: num
+    
+    # body
+    - shell: cat /etc/group | grep docker
+      register: ret
+    
+    - set_fact:
+        users: "{{ ret.stdout | regex_replace('docker:.*:', '') | split(',')}}"
+    - debug:
+        msg: "user : {{ users }}"
+    
+    # weak?
+    - set_fact:
+        weak: users != []
+    - debug:
+        var: weak
+    
+    - set_fact:
+        reason: "{{['users in docker group: {{users}}']}}"
+      when: weak
+
+    - set_fact:
+        reason: "{{['no users in docker group']}}"
+      when: not weak
+
+    - set_fact:
+        bypass: "{{ users }}"
+      when: weak
+
+    - debug:
+        var: bypass
+    
+    # result
+    - block:
+        - debug:
+            msg: 취약
+        - copy:
+            content: "{{ {'num':num, 'diag':diag, 'weak':True , 'reason':reason, 'how_action': ['Remove user from the docker group'], 'bypass':bypass} | to_json }}"
+            dest: "../../log/docker/diag/{{num}}.json"
+          delegate_to: localhost
+      when: weak
+
+    - block:
+        - debug:
+            msg: 양호
+        - copy:
+            content: "{{ {'num':num, 'diag':diag, 'weak':False , 'reason':reason, 'bypass':bypass} | to_json }}"
+            dest: "../../log/docker/diag/{{num}}.json"
+          delegate_to: localhost
+      when: not weak

@@ -1,0 +1,1 @@
+{"num": 28, "diag": "Prohibit SSH usage within containers", "weak": false, "reason": ["SSH is disabled."], "bypass": null}

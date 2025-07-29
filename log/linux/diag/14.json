@@ -1,0 +1,11 @@
+{
+    "diag": "Check DNS (BIND) security version",
+    "how_action": [
+        "Action will install the latest security patch and stop the DNS daemon if it is not in use. Do you want to proceed?"
+    ],
+    "num": 14,
+    "reason": [
+        "The DNS service is in use, and security patches are not managed periodically"
+    ],
+    "weak": true
+}

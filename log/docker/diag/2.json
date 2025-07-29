@@ -1,0 +1,1 @@
+{"num": 2, "diag": "Remove unnecessary users from the Docker group", "weak": true, "reason": ["users in docker group: ['grbsec']"], "how_action": ["Remove user from the docker group"], "bypass": ["grbsec"]}

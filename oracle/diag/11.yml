@@ -1,0 +1,77 @@
+---
+- name: checklist 11
+  hosts: intranetweb
+  
+  tasks:
+
+  # header
+  - set_fact:
+      diag: Apply the latest security patches
+      num: 11
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  # body
+  - name: SQL shell
+    shell: echo "select version, product from product_component_version;" | docker exec -i oraclegrb sqlplus C##grb/dkagh1
+    register: result_11
+  - set_fact:
+      clean_result_lines: "{{ result_11.stdout_lines | reject('search', 'SQL') | reject('search', 'Version') | reject('search', 'SQL') | reject('search', 'Copy') | reject('search', 'Connect') | reject('search', 'Last') | reject('equalto', '') }}"
+  - debug:
+      msg: "{{ clean_result_lines }}"
+  - set_fact:
+      report: >
+        {% if clean_result_lines | regex_search('23ai') %}
+          good
+        {% else %}
+          weak
+        {% endif %}
+  - debug:
+      msg: "{{ report }}"
+
+  # weak?
+  - set_fact:
+      weak: "{{ report | regex_search('weak') }}"
+  - debug:
+      var: weak
+
+  # result
+ 
+  - block:
+      - debug:
+          msg: 해당없음
+      - set_fact:
+          result: "{{{'num':num, 'diag':diag, 'weak':none, 'reason':['N/A']}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: "../../log/oracle/diag/{{num}}.json"
+        delegate_to: localhost
+    when: weak is none
+
+  - block:
+      - debug:
+          msg: 취약
+      - set_fact:
+          result: "{{{'num':num, 'diag':diag, 'weak':True, 'reason':['The latest security patches have not been applied.'], 'how_action':['An update to the latest version is required. Do you want to proceed? ']}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: "../../log/oracle/diag/{{num}}.json"
+        delegate_to: localhost
+    when: weak is not none and weak
+
+  - block:
+      - debug:
+          msg: 양호
+      - set_fact:
+          result: "{{{'num':num, 'diag':diag, 'weak':False, 'reason':['The latest security patches have been applied.']}}}"
+      - copy:
+          content: "{{ result }}"
+          dest: "../../log/oracle/diag/{{num}}.json"
+        delegate_to: localhost
+    when: weak is not none and not weak
+  
+ 
+  - debug:
+      var: result

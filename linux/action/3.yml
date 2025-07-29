@@ -1,0 +1,70 @@
+# 계정 잠금 임계값 설정_setup
+
+---
+- name: actionlist 3
+  hosts: intranetweb
+  tasks:
+
+  - set_fact:
+      diag: Ensure deny setting 
+      num: 3
+    
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  - name: Get OS version
+    command: cat /etc/redhat-release
+    register: os_version
+
+  - name: Ensure deny setting in /etc/pam.d/system-auth for RHEL 7 and below
+    lineinfile:
+      path: /etc/pam.d/system-auth
+      insertafter: 'auth.*'
+      line: 'auth        required                                     pam_tally2.so deny=5 no_magic_root'
+      state: present
+      backup: yes
+    when: "'release 7' in os_version.stdout"
+
+  - name: Ensure deny setting in /etc/pam.d/system-auth for RHEL 8 and above
+    lineinfile:
+      path: /etc/pam.d/system-auth
+      insertafter: 'account.*'
+      line: 'account     required                                     pam_faillock.so preauth silent audit deny=5 unlock_time=600'
+      state: present
+      backup: yes
+    when: "'release 8' in os_version.stdout or 'release 9' in os_version.stdout"
+
+  - name: Ensure deny setting in /etc/pam.d/password-auth for RHEL 7 and below
+    lineinfile:
+      path: /etc/pam.d/password-auth
+      insertafter: 'auth.*'
+      line: 'auth        required                                      pam_tally2.so deny=5 no_magic_root'
+      state: present
+      backup: yes
+    when: "'release 7' in os_version.stdout"
+
+  - name: Ensure deny setting in /etc/pam.d/password-auth for RHEL 8 and above
+    lineinfile:
+      path: /etc/pam.d/password-auth
+      insertafter: 'account.*'
+      line: 'account     required                                       pam_faillock.so preauth silent audit deny=5 unlock_time=600'
+      state: present
+      backup: yes
+    when: "'release 8' in os_version.stdout or 'release 9' in os_version.stdout"
+
+  # action result
+ 
+  - debug:
+      msg: 조치완료
+  # 조치 결과 디테일 / status는 점검 완료
+  - set_fact:
+      result: "{{ {'num': num, 'diag': diag, 'details': ['hihi check~ Setting account lockout threshold to 5 times is completed'], 'status': 'Action Completed'} }}"
+  - copy:
+      content: "{{ result }}"
+      dest: /home/ubuntu/grbprj/log/linux/action/3.json
+    delegate_to: localhost
+  - debug:
+      var: result
+

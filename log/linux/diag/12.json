@@ -1,0 +1,11 @@
+{
+    "diag": "Check Anonymous FTP settings",
+    "how_action": [
+        "Action will change the settings to block access to Anonymous FTP. Do you want to proceed?"
+    ],
+    "num": 12,
+    "reason": [
+        "Access to Anonymous FTP is not blocked"
+    ],
+    "weak": true
+}

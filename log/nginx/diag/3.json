@@ -1,0 +1,1 @@
+{"num": 3, "diag": "\ub9c1\ud06c \uc0ac\uc6a9 \uae08\uc9c0", "weak": true, "reason": ["disable_symlink is not set to off."], "bypass": [{}], "how_action": ["Action will add \"disable_symlinks off;\" to nginx.conf. Do you want to proceed?"]}

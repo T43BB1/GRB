@@ -1,0 +1,38 @@
+---
+- name: actionlist 4
+  hosts: intranetweb
+  tasks:
+
+  - set_fact:
+      diag: Configure administrator privileges
+      num: 4
+  - debug:
+      var: diag
+  - debug:
+      var: num
+
+  - set_fact:
+      weak_gran_priv_list: "{{ bypass[0].weak_gran_priv_list }}"
+  - debug:
+      msg: "{{ weak_gran_priv_list }}"
+
+  # action result
+ 
+  - debug:
+      msg: 조치완료
+  # 조치 결과 디테일 / status는 점검 완료
+  - set_fact:
+      result: "{{{'num':num, 'diag':diag, 'details':['The previously mentioned admin privileges for grantee and privilege set have been successfully revoked.'], 'status':'Action Completed'}}}"
+  - copy:
+      content: "{{ result }}"
+      dest: "../../log/oracle/action/{{num}}.json"
+    delegate_to: localhost
+  - debug:
+      var: result
+
+  ####
+  - name: Drop id
+    shell: echo "REVOKE ADMIN OPTION FOR {{alter_set.grantee}} FROM {{alter_set.privilege}};" | docker exec -i oraclegrb sqlplus C##grb/dkagh1
+    loop: "{{ weak_gran_priv_list }}"
+    loop_control:
+      loop_var: alter_set
